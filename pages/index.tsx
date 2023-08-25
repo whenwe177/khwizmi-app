@@ -7,11 +7,12 @@ const inter = Inter({ subsets: ['latin'] });
 
 export default function Home() {
   const [selectedPages, setSelectedPages] = useState<Set<number>>(new Set());
-
+  const [fileUpload, setFileUpload] = useState<File | null>(null);
 
   return (
     <main>
-        <ChoosePage selectedPages={selectedPages} setSelectedPages={setSelectedPages} />
+        <PdfUploader fileUpload={fileUpload} setFileUpload={setFileUpload}/>
+        <ChoosePage selectedPages={selectedPages} setSelectedPages={setSelectedPages} file={fileUpload!}/>
     </main>
       
   )

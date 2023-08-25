@@ -44,9 +44,11 @@ const PagesPreview = ({
 const ChoosePage = ({
   selectedPages,
   setSelectedPages,
+  file
 }: {
   selectedPages: Set<number>;
   setSelectedPages: React.Dispatch<React.SetStateAction<Set<number>>>;
+  file: File
 }) => {
   const [totalPages, setTotalPages] = useState(0);
 
@@ -69,7 +71,7 @@ const ChoosePage = ({
         className={
           "flex gap-2 flex-wrap justify-center items-center select-none m-4"
         }
-        file="Paper.pdf"
+        file={file}
       >
         {Array.from(new Array(totalPages), (_, i) => i + 1).map((i) => (
           <Page

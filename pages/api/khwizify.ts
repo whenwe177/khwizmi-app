@@ -6,7 +6,7 @@ type Data = {
   quiz: string
 }
 
-const openai = new OpenAI();
+// const openai = new OpenAI();
 
 export default async function handler(
   req: NextApiRequest,
@@ -44,5 +44,5 @@ export default async function handler(
   // });
 
   // return res.status(200).json(JSON.parse(completion.choices[0].message.content || ''))
-  return res.status(200).json(JSON.parse('[{"expected_duration": 60, "question": "Indonesia?", "choices": {a: "Yes", b: "Yes",c: "Yes",d: "Yes"}, "answer": {correct_choice: "a", reason:"Yes"}}]'))
+  return res.status(200).json(JSON.parse('[{"expected_duration": 60, "question": "Indonesia?", "choices": {"a": "Yes", "b": "Yes","c": "Yes","d": "Yes"}, "answer": {"correct_choice": "a", "reason":"Yes"}}, {"expected_duration": 60, "question": "Indonesian?", "choices": {"a": "Yes", "b": "Yes","c": "Yes","d": "Yes"}, "answer": {"correct_choice": "a", "reason":"Yes"}}]'))
 }
