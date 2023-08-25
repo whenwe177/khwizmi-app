@@ -1,43 +1,51 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import * as pdfjsLib from "pdfjs-dist";
+import { useDropzone } from "react-dropzone";
 
 const PdfUploader = () => {
-    const [fileUpload, setFileUpload] = useState<File | null>(null);
-    const fileReader = useRef<FileReader>();
-    useEffect(() => {
-        pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.js`;
-        fileReader.current = new FileReader();
-    }, [])
+  const [fileUpload, setFileUpload] = useState<File | null>(null);
+
+  const onDrop = useCallback((files: File[]) => {
+    const uploadedFile = files[0];
+    setFileUpload(uploadedFile);
+  }, []);
+
+  const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
+    onDrop,
+  });
+
+  useEffect(() => {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.js`;
+  }, []);
 
   const onFormSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
-    
+
     if (fileUpload == null) {
-        console.log("Upload smth");
-        return;
+      console.log("Upload smth");
+      return;
     }
-    console.log("First")
     const buffer = await fileUpload?.arrayBuffer();
-    console.log("Works")
     const loadingTask = pdfjsLib.getDocument(buffer!);
-    
-    const pdf = await loadingTask.promise
+
+    const pdf = await loadingTask.promise;
     const page = await pdf.getPage(2);
     const result = await page.getTextContent();
-    const resultString = result.items.map((item: any) => item.str).join(" ")
+    const resultString = result.items.map((item: any) => item.str).join(" ");
+    console.log(resultString);
   };
 
-  const parsePDF = async () => {
-    
-  };
+  const parsePDF = async () => {};
 
   return (
     <div>
       <form onSubmit={onFormSubmit}>
-        <input
-          type="file"
-          onChange={(e) => setFileUpload(e.target.files?.[0] ?? null)}
-        />
+        <div
+          {...getRootProps({ className: "bg-slate-500 w-[100px] h-[100px]" })}
+        >
+          <input {...getInputProps()} />
+          <p>Drag and drop some files here</p>
+        </div>
         <button>Upload</button>
       </form>
       <button onClick={() => parsePDF()}>Test</button>
