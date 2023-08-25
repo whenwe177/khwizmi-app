@@ -18,10 +18,6 @@ const PdfUploader = () => {
     maxFiles: 1
   });
 
-  useEffect(() => {
-    pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.js`;
-  }, []);
-
   const onFormSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
 
