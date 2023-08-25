@@ -20,6 +20,7 @@ export default async function handler(
         role: "user",
         content: `You are an expert quiz maker who is able to create quizzes that effectively tests the knowledge of learners. Your job is to create a quiz and return each question in a JSON format with the following structure
       {
+        expected_duration: ...,
         question: ...,
         choices: {
           a: ...,
@@ -31,7 +32,7 @@ export default async function handler(
           correct_choice: ...,
           reason: ...
         }
-      }. The answer property will consist of correct_choice and reason. You will provide the correct choice ('a', 'b', 'c', 'd') in the correct_choice property whilst also providing the reason on why it is correct. Each choice should be concise. You will be given a block of text as context, prefixed with 'CONTEXT:'. Create a list of questions based on the text and return a maximum of 15 questions for the quiz. Return the list of questions only and no other text.`,
+      }. The answer property will consist of correct_choice and reason. You will provide the correct choice ('a', 'b', 'c', 'd') in the correct_choice property whilst also providing the reason on why it is correct. Each choice should be concise. Depending on how hard the question is give an expected_duration in seconds. You will be given a block of text as context, prefixed with 'CONTEXT:'. Create a list of questions based on the text and return a maximum of 15 questions for the quiz. Return the list of questions only and no other text.`,
       },
       {
         role: "user",
