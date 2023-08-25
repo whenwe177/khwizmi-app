@@ -10,8 +10,12 @@ const PdfUploader = () => {
     setFileUpload(uploadedFile);
   }, []);
 
-  const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
+  const { getRootProps, getInputProps } = useDropzone({
     onDrop,
+    accept: {
+      "application/pdf": [".pdf"],
+    },
+    maxFiles: 1
   });
 
   useEffect(() => {
@@ -29,9 +33,9 @@ const PdfUploader = () => {
     const loadingTask = pdfjsLib.getDocument(buffer!);
 
     const pdf = await loadingTask.promise;
-    const page = await pdf.getPage(2);
+    const page = await pdf.getPage(1);
     const result = await page.getTextContent();
-    const resultString = result.items.map((item: any) => item.str).join(" ");
+    const resultString = result.items.map((item: any) => item.str).join("");
     console.log(resultString);
   };
 
