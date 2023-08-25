@@ -16,6 +16,7 @@
     "autoprefixer": "10.4.15",
     "clsx": "^2.0.0",
     "firebase": "^10.3.0",
+    "framer-motion": "^10.16.1",
     "next": "13.4.19",
     "openai": "^4.2.0",
     "pdfjs-dist": "^3.9.179",
