@@ -11,7 +11,9 @@ const config: Config = {
       colors: {
         purple1: "#1A184E",
         blue1: "#0163FF",
-        green1: "#96A630"
+        green1: "#96A630",
+        bg1darkgradient: "#0f0330",
+        bg1lightgradient: "#283471"
       }
     },
   },
