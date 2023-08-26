@@ -3,7 +3,7 @@ import QuizQuestion from "./QuizQuestion";
 import { Timestamp, doc, getDoc, updateDoc } from "firebase/firestore";
 import { firestore } from "@/firebase";
 import { Choices, StudySession } from "@/Quiz";
-import router, { useRouter } from "next/router";
+import { useRouter } from "next/router";
 import { calculateScore } from "@/utils/calculateScore";
 import Logo from "../Logo";
 import { motion, AnimatePresence } from "framer-motion";
