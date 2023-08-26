@@ -2,7 +2,7 @@ import { useAppContext } from "@/context/AppContext";
 import { firestore, storage } from "@/firebase";
 import { useQuery } from "@tanstack/react-query";
 import { getBlob, ref } from "firebase/storage";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { Timestamp, collection, doc, getDocs, query, setDoc, updateDoc, where } from "firebase/firestore";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { Document, Page } from "react-pdf";
@@ -63,15 +63,15 @@ const Study = () => {
   const { startTimer, seconds } = useTimer({
     onTimerEnd: () => router.push("/quiz"),
   });
+  const studySessionsRef = collection(firestore, "study_session");
+  const ongoingStudySession = query(
+    studySessionsRef,
+    where("uid", "==", user!.uid),
+    where("ongoing", "==", true)
+  );
 
   const studySession = useQuery(["study"], {
     queryFn: async () => {
-      const studySessionsRef = collection(firestore, "study_session");
-      const ongoingStudySession = query(
-        studySessionsRef,
-        where("uid", "==", user!.uid),
-        where("ongoing", "==", true)
-      );
       const studySessionSnapshot = await getDocs(ongoingStudySession);
       if (!studySessionSnapshot.size) {
         router.push("/");
@@ -85,14 +85,14 @@ const Study = () => {
         router.push("/quiz");
         return Promise.reject();
       }
-      return studySession;
+      return studySessionSnapshot.docs[0];
     },
     staleTime: Infinity,
   });
 
   const fileData = useQuery(["file_data"], {
     queryFn: async () => {
-      const fileRef = ref(storage, studySession.data!.pdf_url);
+      const fileRef = ref(storage, studySession.data!.data().pdf_url);
       return await getBlob(fileRef);
     },
     enabled: studySession.isSuccess,
@@ -102,11 +102,18 @@ const Study = () => {
   useEffect(() => {
     if (studySession.isSuccess) {
       const seconds = Math.floor(
-        studySession.data.study_end_time.seconds - Date.now() / 1000
+        studySession.data.data().study_end_time.seconds - Date.now() / 1000
       );
       startTimer(seconds);
     }
   }, [studySession.isSuccess]);
+
+  async function endSession() {
+    if (!studySession.data) return
+    await updateDoc(doc(firestore, "study_session", studySession.data.id), {
+      study_end_time: Timestamp.fromDate(new Date())
+    })
+  }
 
   if (studySession.isLoading || fileData.isLoading) {
     return (
@@ -172,7 +179,7 @@ const Study = () => {
         loading={null}
         file={fileData.data}
       >
-        {studySession.data!.pages.map((i: number) => (
+        {studySession.data!.data().pages.map((i: number) => (
           <Page scale={2} loading={null} pageNumber={i} key={i} />
         ))}
       </Document>
@@ -203,11 +210,9 @@ const Study = () => {
                 <DialogClose>
                   <Button variant={"ghost"}>Nevermind</Button>
                 </DialogClose>
-                <Link href={"/quiz"}>
-                  <Button className="bg-yellow1 hover:bg-yellow-600 text-black">
-                    I'm ready!
-                  </Button>
-                </Link>
+                <Button onClick={endSession} className="bg-yellow1 hover:bg-yellow-600 text-black">
+                  I'm ready!
+                </Button>
               </DialogFooter>
             </DialogHeader>
           </DialogContent>
