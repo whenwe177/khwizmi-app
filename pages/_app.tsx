@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { pdfjs } from "react-pdf";
 import { AppProvider } from "@/context/AppContext";
 import { ToastContainer } from "react-toastify";
+import ProtectRoute from "@/components/ProtectRoute";
 
 export default function App({ Component, pageProps }: AppProps) {
   const [queryClient] = useState(() => new QueryClient());
@@ -27,7 +28,13 @@ export default function App({ Component, pageProps }: AppProps) {
         theme="light"
       />
       <AppProvider>
-        <Component {...pageProps} />
+        {(Component as any).auth ? (
+          <ProtectRoute>
+            <Component {...pageProps} />
+          </ProtectRoute>
+        ) : (
+          <Component {...pageProps} />
+        )}
       </AppProvider>
     </QueryClientProvider>
   );
