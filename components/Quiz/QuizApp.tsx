@@ -33,6 +33,7 @@ interface CountdownProps {
   quizId: string;
   contentLength: number;
   answerPercentage: number;
+  correctAnswer:number;
 }
 
 const wrapperVariants = {
@@ -65,6 +66,7 @@ const Countdown: React.FC<CountdownProps> = ({
   quizId,
   contentLength,
   answerPercentage,
+  correctAnswer
 }) => {
   const router = useRouter();
   const { user } = useAppContext();
@@ -85,9 +87,11 @@ const Countdown: React.FC<CountdownProps> = ({
 
     const invalidateQuiz = async () => {
       const score = calculateScore(duration, contentLength, answerPercentage);
+      const correct_answers = correctAnswer;
       await updateDoc(studySessionRef, {
         ongoing: false,
         score,
+        correct_answers,
       });
       const userRef = doc(firestore, "user_attributes", user!.uid);
       const userInfo = await getDoc(userRef);
@@ -122,9 +126,12 @@ const Quiz: React.FC<Props> = ({ quiz, quizId, contentLength }) => {
       contentLength,
       answerPercentage
     );
+
+    const correct_answers = correctAnswer;
     await updateDoc(studySessionRef, {
       ongoing: false,
       score,
+      correct_answers,
     });
     const userRef = doc(firestore, "user_attributes", user!.uid);
     const userInfo = await getDoc(userRef);
@@ -134,6 +141,12 @@ const Quiz: React.FC<Props> = ({ quiz, quizId, contentLength }) => {
     });
     router.push(`/results/${quizId}`);
   };
+
+  const correctAnswer = userAnswers.reduce((prev, current, idx) => {
+    const correctAnswer = quiz.quiz?.[idx].answer.correct_choice;
+    if (current === correctAnswer) return prev + 1;
+    return prev;
+  }, 0);
 
   const answerPercentage =
     userAnswers.reduce((prev, current, idx) => {
@@ -173,6 +186,7 @@ const Quiz: React.FC<Props> = ({ quiz, quizId, contentLength }) => {
             quizId={quizId}
             contentLength={contentLength}
             answerPercentage={answerPercentage}
+            correctAnswer={correctAnswer}
           />
         </div>
 
@@ -224,7 +238,7 @@ const Quiz: React.FC<Props> = ({ quiz, quizId, contentLength }) => {
             <DialogHeader>
               <DialogTitle>You still have time!</DialogTitle>
               <DialogDescription>
-                Your attempt will be submited immideately. You've got time to
+                Your attempt will be submited immidiately. You've got time to
                 continue answering the questions. Are you sure about this?
               </DialogDescription>
               <DialogFooter>
