@@ -7,7 +7,7 @@ import {
 } from "react";
 import { auth, firestore } from "@/firebase";
 import { User, onAuthStateChanged } from "firebase/auth";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, getDocs, limit, query, where } from "firebase/firestore";
 import { useRouter } from "next/router";
 interface AppContextState {
   user: User | null;
@@ -23,9 +23,9 @@ const AppProvider: React.FC<PropsWithChildren> = ({ children }) => {
   useEffect(() => {
     return onAuthStateChanged(auth, async (user) => {
       setUser(user);
-      if (user) {
+      if (user && ['/', '/quiz', '/study'].includes(router.asPath)) {
         const studySessionsRef = collection(firestore, 'study_session')
-        const ongoingStudySession = query(studySessionsRef, where('uid', "==", user.uid), where('ongoing', "==", true));
+        const ongoingStudySession = query(studySessionsRef, where('uid', "==", user.uid), where('ongoing', "==", true), limit(1));
         const studySessionSnapshot = await getDocs(ongoingStudySession);
         if (studySessionSnapshot.size) {
           studySessionSnapshot.docs.forEach(doc => {

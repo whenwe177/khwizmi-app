@@ -6,6 +6,8 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { Document, Page } from "react-pdf";
+import "react-pdf/dist/Page/AnnotationLayer.css";
+import "react-pdf/dist/Page/TextLayer.css";
 
 const useTimer = ({ onTimerEnd }: { onTimerEnd: () => void }) => {
   const timerEnd = useRef(onTimerEnd);
@@ -24,10 +26,10 @@ const useTimer = ({ onTimerEnd }: { onTimerEnd: () => void }) => {
   const startTimer = (durationInSeconds: number) => {
     clearInterval(countdownInterval.current);
     time.current = durationInSeconds;
-    setSeconds(durationInSeconds)
+    setSeconds(durationInSeconds);
     countdownInterval.current = setInterval(() => {
       if (time.current <= 0) {
-        console.log('timer end')
+        console.log("timer end");
         timerEnd.current();
         clearInterval(countdownInterval.current);
         return;
@@ -37,13 +39,15 @@ const useTimer = ({ onTimerEnd }: { onTimerEnd: () => void }) => {
     }, 1000);
   };
 
-  return { startTimer, seconds }
+  return { startTimer, seconds };
 };
 
 const Study = () => {
   const { user } = useAppContext();
   const router = useRouter();
-  const { startTimer, seconds } = useTimer({ onTimerEnd: () => router.push("/quiz") });
+  const { startTimer, seconds } = useTimer({
+    onTimerEnd: () => router.push("/quiz"),
+  });
 
   const studySession = useQuery(["study"], {
     queryFn: async () => {
@@ -54,10 +58,16 @@ const Study = () => {
         where("ongoing", "==", true)
       );
       const studySessionSnapshot = await getDocs(ongoingStudySession);
-      if (!studySessionSnapshot.size) return Promise.reject();
-      const studySession = studySessionSnapshot.docs[0].data();
-      if (new Date(studySession.study_end_time.seconds * 1000).getTime() < Date.now()) {
+      if (!studySessionSnapshot.size) {
         router.push("/");
+        return Promise.reject();
+      }
+      const studySession = studySessionSnapshot.docs[0].data();
+      if (
+        new Date(studySession.study_end_time.seconds * 1000).getTime() <
+        Date.now()
+      ) {
+        router.push("/quiz");
         return Promise.reject();
       }
       return studySession;
@@ -76,16 +86,16 @@ const Study = () => {
 
   useEffect(() => {
     if (studySession.isSuccess) {
-        const seconds = Math.floor(studySession.data.study_end_time.seconds - (Date.now()/1000))
-        startTimer(seconds);
+      const seconds = Math.floor(
+        studySession.data.study_end_time.seconds - Date.now() / 1000
+      );
+      startTimer(seconds);
     }
-  }, [studySession.isSuccess])
-
+  }, [studySession.isSuccess]);
 
   if (fileData.isLoading || studySession.isLoading) {
     return <div>Loading...</div>;
   }
-
 
   return (
     <Document
@@ -94,14 +104,7 @@ const Study = () => {
       file={fileData.data}
     >
       {studySession.data!.pages.map((i: number) => (
-        <Page
-          scale={2}
-          loading={null}
-          renderAnnotationLayer={false}
-          renderTextLayer={false}
-          pageNumber={i}
-          key={i}
-        />
+        <Page scale={2} loading={null} pageNumber={i} key={i} />
       ))}
     </Document>
   );
