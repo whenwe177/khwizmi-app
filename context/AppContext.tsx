@@ -23,7 +23,7 @@ const AppProvider: React.FC<PropsWithChildren> = ({ children }) => {
   useEffect(() => {
     return onAuthStateChanged(auth, async (user) => {
       setUser(user);
-      if (user && ["/", "/quiz", "/study"].includes(router.asPath)) {
+      if (user && ["/", "/quiz", "/study", "/upload"].includes(router.asPath)) {
         const studySessionsRef = collection(firestore, "study_session");
         const ongoingStudySession = query(
           studySessionsRef,

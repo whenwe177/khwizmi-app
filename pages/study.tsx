@@ -8,6 +8,21 @@ import { useEffect, useRef, useState } from "react";
 import { Document, Page } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
+import { motion } from "framer-motion";
+import Star from "@/components/Star";
+import clsx from "clsx";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { DialogClose } from "@radix-ui/react-dialog";
+import Link from "next/link";
 
 const useTimer = ({ onTimerEnd }: { onTimerEnd: () => void }) => {
   const timerEnd = useRef(onTimerEnd);
@@ -93,20 +108,112 @@ const Study = () => {
     }
   }, [studySession.isSuccess]);
 
-  if (fileData.isLoading || studySession.isLoading) {
-    return <div>Loading...</div>;
+  if (studySession.isLoading || fileData.isLoading) {
+    return (
+      <main
+        style={{
+          background: "linear-gradient(180deg, #0E032F 0%, #283472 100%)",
+        }}
+        className="min-h-screen w-full overflow-auto flex flex-col items-center justify-center"
+      >
+        <div
+          className="w-full h-screen fixed top-0 pointer-events-none"
+          style={{
+            background: 'url("bg1.png")',
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "cover",
+            backgroundPositionY: "150px",
+          }}
+        />
+        <motion.div
+          style={{
+            opacity: 0.8,
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            x: "-50%",
+            y: "-50%",
+          }}
+          initial={{ scale: 0.5 }}
+          animate={{ scale: 1, rotate: 360 }}
+          transition={{
+            rotate: {
+              ease: "anticipate",
+              duration: 2,
+              repeat: Infinity,
+              repeatType: "reverse",
+            },
+          }}
+        >
+          <Star className="h-[120px] w-[120px]" />
+        </motion.div>
+      </main>
+    );
   }
 
   return (
-    <Document
-      className={"flex flex-col items-center gap-4 bg-black p-4"}
-      loading={null}
-      file={fileData.data}
+    <main
+      style={{
+        background: "linear-gradient(180deg, #0E032F 0%, #283472 100%)",
+      }}
+      className="min-h-screen w-full overflow-auto flex flex-col items-center lg:items-end justify-center"
     >
-      {studySession.data!.pages.map((i: number) => (
-        <Page scale={2} loading={null} pageNumber={i} key={i} />
-      ))}
-    </Document>
+      <div
+        className="w-full h-screen fixed top-0 pointer-events-none"
+        style={{
+          background: 'url("bg1.png")',
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "cover",
+          backgroundPositionY: "150px",
+        }}
+      />
+      <Document
+        className={"flex flex-col items-center gap-4 p-4"}
+        loading={null}
+        file={fileData.data}
+      >
+        {studySession.data!.pages.map((i: number) => (
+          <Page scale={2} loading={null} pageNumber={i} key={i} />
+        ))}
+      </Document>
+      <div className="fixed top-8 left-24 flex items-center gap-4">
+        <div className="h-[80px] w-[250px] rounded-lg bg-yellow1 text-black flex items-center justify-center">
+          <span
+            className={clsx(
+              "text-4xl font-bold",
+              seconds < 60 && "text-red-500"
+            )}
+          >
+            {`${Math.floor(seconds / 60)}`.padStart(2, "0")}:
+            {`${seconds - Math.floor(seconds / 60) * 60}`.padStart(2, "0")}
+          </span>
+        </div>
+        <Dialog>
+          <DialogTrigger>
+            <Button variant={"destructive"}>End Session</Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>You still have time!</DialogTitle>
+              <DialogDescription>
+                You will be take to the A.I curated review quiz directly. You
+                still have time to study! Are you sure about this?
+              </DialogDescription>
+              <DialogFooter>
+                <DialogClose>
+                  <Button variant={"ghost"}>Nevermind</Button>
+                </DialogClose>
+                <Link href={"/quiz"}>
+                  <Button className="bg-yellow1 hover:bg-yellow-600 text-black">
+                    I'm ready!
+                  </Button>
+                </Link>
+              </DialogFooter>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
+      </div>
+    </main>
   );
 };
 Study.auth = true;
