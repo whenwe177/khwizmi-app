@@ -10,6 +10,7 @@ import { auth, firestore, googleProvider } from "@/firebase";
 import Google from "@/components/Svg/Google";
 import { useRouter } from "next/router";
 import { doc, getDoc, setDoc } from "firebase/firestore";
+import Khwarizmi from "@/components/Khwarizmi";
 
 const Stars = () => {
   return (
@@ -90,8 +91,8 @@ const Home = () => {
       await setDoc(usersRef, {
         experience: 0,
         name: user.user.displayName,
-        photo_url: user.user.photoURL,
-      });
+        photo_url: user.user.photoURL
+      })
     }
   };
 
@@ -105,7 +106,7 @@ const Home = () => {
     }
 
     router.push("/upload");
-  };
+  }
 
   return (
     <main
@@ -114,23 +115,9 @@ const Home = () => {
       }}
       className="min-h-screen w-full overflow-auto flex flex-col items-center justify-center"
     >
-      <div className="absolute top-4 right-4 flex gap-4 items-center">
-        {
-          user && <Link href="/leaderboard" className="text-white">Leaderboard</Link>
-        }
-        <Button
-          className="bg-transparent hover:bg-transparent border-2 border-white"
-          onClick={user ? logout : loginWithGoogle}
-        >
-          {user ? (
-            <p>Logout</p>
-          ) : (
-            <div className="flex items-center gap-2">
-              <Google fill="white" width={15} /> Login with Google
-            </div>
-          )}
-        </Button>
-      </div>
+      <Button className="absolute top-4 right-4 bg-transparent hover:bg-transparent border-2 border-white" onClick={user ? logout : loginWithGoogle}>
+        {user ? <p>Logout</p> : <div className="flex items-center gap-2"><Google fill="white" width={15}/> Login with Google</div>}
+      </Button>
       <motion.div
         initial={{ y: -15 }}
         animate={{ y: 0 }}
@@ -147,12 +134,9 @@ const Home = () => {
       <h2 className="text-white text-3xl mb-12">
         The future of education is here.
       </h2>
-      <Button
-        className="bg-yellow1 hover:bg-yellow-600 text-black font-bold"
-        onClick={startLearning}
-      >
-        Start Learning
-      </Button>
+        <Button className="bg-yellow1 hover:bg-yellow-600 text-black font-bold" onClick={startLearning}>
+          Start Learning
+        </Button>
       <div
         className="w-full h-screen fixed top-0 pointer-events-none"
         style={{
@@ -163,6 +147,7 @@ const Home = () => {
         }}
       />
       <Stars />
+      <Khwarizmi float posX={-680} posY={200} className="w-[400px] h-[400px]" />
     </main>
   );
 };
