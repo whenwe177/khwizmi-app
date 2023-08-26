@@ -7,6 +7,7 @@ import { pdfjs } from "react-pdf";
 import { AppProvider } from "@/context/AppContext";
 import { ToastContainer } from "react-toastify";
 import ProtectRoute from "@/components/ProtectRoute";
+import { Inter } from "next/font/google";
 
 export default function App({ Component, pageProps }: AppProps) {
   const [queryClient] = useState(() => new QueryClient());

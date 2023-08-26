@@ -16,6 +16,7 @@ import {
 } from "firebase/firestore";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
+import bg from "@/public/bg1.png";
 
 const QuizPage = () => {
   const [quiz, setQuiz] = useState<StudySession | null>(null);
@@ -24,8 +25,7 @@ const QuizPage = () => {
   const [contentLength, setContentLength] = useState(0);
 
   const router = useRouter();
-  const {user} = useAppContext();
-
+  const { user } = useAppContext();
 
   const { mutateAsync } = useMutation({
     mutationFn: async (content: string) => {
@@ -56,9 +56,13 @@ const QuizPage = () => {
         const activeSessions = result.docs;
 
         const activeSession = activeSessions[0].data() as StudySession;
-        if (Date.now() < activeSession.study_end_time.toMillis()) router.push("/study");
+        if (Date.now() < activeSession.study_end_time.toMillis())
+          router.push("/study");
 
-        const content = await parsePdf(activeSession.pdf_url, activeSession.pages);
+        const content = await parsePdf(
+          activeSession.pdf_url,
+          activeSession.pages
+        );
         const activeSessionID = activeSessions[0].id;
 
         if (activeSession.quiz == null) {
@@ -78,11 +82,10 @@ const QuizPage = () => {
             quiz: data,
             quiz_end_time: Timestamp.fromMillis(quizEndTime),
             duration: timeToAccomplishTask,
-
           });
           activeSession.quiz = data;
           activeSession.quiz_end_time = Timestamp.fromMillis(quizEndTime);
-          activeSession.duration = timeToAccomplishTask
+          activeSession.duration = timeToAccomplishTask;
         }
         setQuiz(activeSession);
         setQuizId(activeSessionID);
@@ -96,16 +99,22 @@ const QuizPage = () => {
     getStudySession();
   }, []);
 
-  
   if (isError) return <p>Error</p>;
 
-  const isLoading = quiz?.quiz == null || quiz?.quiz_end_time == null || quiz?.duration == null
-  
+  const isLoading =
+    quiz?.quiz == null || quiz?.quiz_end_time == null || quiz?.duration == null;
+
   if (isLoading) return <p>Loading</p>;
 
   return (
-    <div>
-      <QuizApp quiz={quiz!} quizId={quizId} contentLength={contentLength}/>
+    <div
+      style={{
+        background: `url(${bg.src}), linear-gradient(180deg, #0E032F 0%, #283472 100%)`,
+        backgroundSize: "cover",
+      }}
+      className="h-screen p-8 flex flex-col items-center gap-3"
+    >
+      <QuizApp quiz={quiz!} quizId={quizId} contentLength={contentLength} />
     </div>
   );
 };

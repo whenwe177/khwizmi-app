@@ -5,6 +5,9 @@ import { firestore } from "@/firebase";
 import { Choices, StudySession } from "@/Quiz";
 import router, { useRouter } from "next/router";
 import { calculateScore } from "@/utils/calculateScore";
+import Logo from "../Logo";
+import { motion, AnimatePresence } from "framer-motion";
+import Arrow from "../Svg/Arrow";
 
 interface Props {
   quiz: StudySession;
@@ -19,6 +22,30 @@ interface CountdownProps {
   contentLength: number;
   answerPercentage: number;
 }
+
+const wrapperVariants = {
+  beforeShown: {
+    x: -20,
+    opacity: 0,
+    transition: {
+      type: "tween",
+    },
+  },
+  shown: {
+    x: 0,
+    opacity: 1,
+    transition: {
+      type: "tween",
+    },
+  },
+  afterShown: {
+    x: 20,
+    opacity: 0,
+    transition: {
+      type: "tween",
+    },
+  },
+};
 
 const Countdown: React.FC<CountdownProps> = ({
   timestamp,
@@ -55,12 +82,10 @@ const Countdown: React.FC<CountdownProps> = ({
     invalidateQuiz();
   }, [delta]);
   return (
-    <div>
-      <p>
-        {`${Math.floor(delta / 60)}`.padStart(2, "0")}:
-        {`${delta % 60}`.padStart(2, "0")}
-      </p>
-    </div>
+    <p className="text-white text-xl font-semibold">
+      {`${Math.floor(delta / 60)}`.padStart(2, "0")}:
+      {`${delta % 60}`.padStart(2, "0")}
+    </p>
   );
 };
 
@@ -104,28 +129,70 @@ const Quiz: React.FC<Props> = ({ quiz, quizId, contentLength }) => {
 
   return (
     <>
-      <div className="flex">
-        <div className="flex flex-col">
-          {quiz.quiz?.map((_, idx) => (
-            <button key={idx} onClick={() => setCurrentQuestion(idx)}>
-              {idx + 1}.
-            </button>
-          ))}
+      <div className="flex flex-col items-center w-full gap-6">
+        <div className="flex my-12 items-center gap-3">
+          <Logo className="h-[80px] w-[70px]" />
+          <p className="text-white text-4xl font-semibold">Khwizmi</p>
         </div>
-        <QuizQuestion
-          key={currentQuestion}
-          question={quiz.quiz?.[currentQuestion]!}
-          idx={currentQuestion}
-          onUserAnswerChange={onUserAnswerChange}
-        />
-        <Countdown
-          timestamp={quiz.quiz_end_time!}
-          duration={quiz.duration!}
-          quizId={quizId}
-          contentLength={contentLength}
-          answerPercentage={answerPercentage}
-        />
-        <button onClick={invalidateQuiz}>Finish</button>
+        <div className="flex justify-between items-center w-full">
+          <h1 className="text-white font-semibold text-xl">
+            {currentQuestion + 1}/{userAnswers.length}
+          </h1>
+          <h1 className="text-white font-semibold text-3xl my-3">
+            Review Quiz
+          </h1>
+          <Countdown
+            timestamp={quiz.quiz_end_time!}
+            duration={quiz.duration!}
+            quizId={quizId}
+            contentLength={contentLength}
+            answerPercentage={answerPercentage}
+          />
+        </div>
+
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentQuestion}
+            variants={wrapperVariants}
+            initial="beforeShown"
+            animate="shown"
+            exit="afterShown"
+            className="w-full"
+          >
+            <QuizQuestion
+              question={quiz.quiz?.[currentQuestion]!}
+              idx={currentQuestion}
+              onUserAnswerChange={onUserAnswerChange}
+              chosenAnswer={userAnswers[currentQuestion]!}
+            />
+          </motion.div>
+        </AnimatePresence>
+
+        <div className="flex">
+          {currentQuestion > 0 && (
+            <motion.button
+              whileHover={{ translateX: -10 }}
+              onClick={() => setCurrentQuestion((prev) => prev - 1)}
+            >
+              <Arrow fill="white" className="w-[25px] h-[25px]" />
+            </motion.button>
+          )}
+          {currentQuestion < userAnswers.length - 1 && (
+            <motion.button
+              style={{ rotate: "180deg" }}
+              whileHover={{ translateX: 10 }}
+              onClick={() => setCurrentQuestion((prev) => prev + 1)}
+            >
+              <Arrow fill="white" className="w-[25px] h-[25px]" />
+            </motion.button>
+          )}
+        </div>
+        <button
+          className="bg-yellow1 text-black text-lg rounded-lg px-10 py-2 font-bold"
+          onClick={invalidateQuiz}
+        >
+          Finish
+        </button>
       </div>
     </>
   );
