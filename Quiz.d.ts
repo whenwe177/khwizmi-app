@@ -9,5 +9,20 @@ interface QuizQuestion {
   expected_duration: number;
   question: string;
   choices: Record<Choices, string>;
-  answer: Answer;
+  answer: Answer
+}
+
+interface StudySession {
+  ongoing: boolean;
+  pages: number[];
+  pdf_url: string;
+  quiz?: QuizQuestion[];
+  quiz_end_time?: number;
+  study_end_time: number;
+  uid: string;
+}
+
+interface UserAttrs {
+  uid: string;
+  experience: number;
 }
