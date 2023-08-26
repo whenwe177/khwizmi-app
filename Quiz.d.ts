@@ -16,6 +16,7 @@ interface Question {
 
 interface StudySession {
   score: number;
+  correct_answers: number;
   ongoing: boolean;
   pages: number[];
   pdf_url: string;
