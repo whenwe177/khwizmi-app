@@ -8,6 +8,7 @@ import clsx from "clsx";
 import { useMutation } from "@tanstack/react-query";
 import { addDoc, collection, Timestamp } from "firebase/firestore";
 import { nanoid }from "nanoid"
+import { useRouter } from "next/router";
 
 async function uploadFile(file: File) {
   const storageRef = ref(storage, nanoid());
@@ -21,7 +22,11 @@ export default function Home() {
   const [selectedPages, setSelectedPages] = useState<Set<number>>(new Set());
   const [fileUpload, setFileUpload] = useState<File | null>(null);
   const [studyDuration, setStudyDuration] = useState<number>(0);
+  const router = useRouter();
   const startStudying = useMutation({
+    onSuccess: () => {
+      router.push('/study');
+    },
     mutationFn: async () => {
       if (!fileUpload || !studyDuration || !user) return;
       const pdfUrl = await uploadFile(fileUpload);
