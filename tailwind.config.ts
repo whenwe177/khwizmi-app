@@ -20,6 +20,7 @@ module.exports = {
         purple1: "#1A184E",
         blue1: "#0163FF",
         green1: "#96A630",
+        yellow1: "#FFC551",
         bg1darkgradient: "#0f0330",
         bg1lightgradient: "#283471",
         choice1: "#004CC6",
