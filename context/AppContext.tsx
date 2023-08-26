@@ -9,6 +9,7 @@ import { auth, firestore } from "@/firebase";
 import { User, onAuthStateChanged } from "firebase/auth";
 import { collection, getDocs, limit, query, where } from "firebase/firestore";
 import { useRouter } from "next/router";
+import Loading from "@/components/Loading";
 interface AppContextState {
   user: User | null;
 }
@@ -50,24 +51,7 @@ const AppProvider: React.FC<PropsWithChildren> = ({ children }) => {
   }, []);
 
   if (loading) {
-    return (
-      <main
-        style={{
-          background: "linear-gradient(180deg, #0E032F 0%, #283472 100%)",
-        }}
-        className="min-h-screen w-full overflow-auto flex flex-col items-center justify-center"
-      >
-        <div
-          className="w-full h-screen absolute top-0 pointer-events-none"
-          style={{
-            background: 'url("bg1.png")',
-            backgroundRepeat: "no-repeat",
-            backgroundSize: "cover",
-            backgroundPositionY: "150px",
-          }}
-        />
-      </main>
-    );
+    return <Loading/>
   }
 
   return <AppContext.Provider value={{ user }}>{children}</AppContext.Provider>;

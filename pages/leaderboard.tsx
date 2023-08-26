@@ -19,6 +19,9 @@ import GradCap from "@/components/Svg/GradCap";
 import Medal from "@/components/Svg/Medal";
 import University from "@/components/Svg/University";
 import Book from "@/components/Svg/Book";
+import Loading from "@/components/Loading";
+import ErrorComponent from "@/components/Error";
+import AccordionListOfQuizzes from "@/components/AccordionListOfQuizzes";
 
 const LeaderboardPage = () => {
   const { user } = useAppContext();
@@ -39,8 +42,8 @@ const LeaderboardPage = () => {
 
   
 
-  if (isLoading) return <p>Loading</p>;
-  if (isError) return <p>Error</p>;
+  if (isLoading) return <Loading/>;
+  if (isError) return <ErrorComponent/>;
   const top5 = data.slice(0,5);
   const containedInTop5 = top5.map(item => item.uid).includes(user!.uid)
   const indexOfCurrentUser = data.findIndex(mappedUser => mappedUser.uid === user?.uid);

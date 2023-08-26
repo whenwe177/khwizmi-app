@@ -17,6 +17,9 @@ import {
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import bg from "@/public/bg1.png";
+import Loading from "@/components/Loading";
+import ErrorComponent from "@/components/Error";
+
 
 const QuizPage = () => {
   const router = useRouter();
@@ -85,8 +88,8 @@ const QuizPage = () => {
     staleTime: Infinity,
   });
 
-  if (isLoading) return <p>Hello</p>;
-  if (isError) return <p>Error</p>;
+  if (isLoading) return <Loading/>;
+  if (isError) return <ErrorComponent/>;
 
   return (
     <div

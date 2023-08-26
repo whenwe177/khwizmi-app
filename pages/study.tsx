@@ -22,6 +22,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { DialogClose } from "@radix-ui/react-dialog";
+import Loading from "@/components/Loading";
 
 const useTimer = ({ onTimerEnd }: { onTimerEnd: () => void }) => {
   const timerEnd = useRef(onTimerEnd);
@@ -117,44 +118,7 @@ const Study = () => {
 
   if (studySession.isLoading || fileData.isLoading) {
     return (
-      <main
-        style={{
-          background: "linear-gradient(180deg, #0E032F 0%, #283472 100%)",
-        }}
-        className="min-h-screen w-full overflow-auto flex flex-col items-center justify-center"
-      >
-        <div
-          className="w-full h-screen fixed top-0 pointer-events-none"
-          style={{
-            background: 'url("bg1.png")',
-            backgroundRepeat: "no-repeat",
-            backgroundSize: "cover",
-            backgroundPositionY: "150px",
-          }}
-        />
-        <motion.div
-          style={{
-            opacity: 0.8,
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            x: "-50%",
-            y: "-50%",
-          }}
-          initial={{ scale: 0.5 }}
-          animate={{ scale: 1, rotate: 360 }}
-          transition={{
-            rotate: {
-              ease: "anticipate",
-              duration: 2,
-              repeat: Infinity,
-              repeatType: "reverse",
-            },
-          }}
-        >
-          <Star className="h-[120px] w-[120px]" />
-        </motion.div>
-      </main>
+      <Loading/>
     );
   }
 
