@@ -1,16 +1,9 @@
 import React from "react";
 
-interface Props extends React.SVGAttributes<SVGElement> {
-    width: number;
-    height: number;
-}
-
-const Logo = ({ width, height, children, ...rest }: Props) => {
+const Logo = ({  children, ...rest }: React.SVGAttributes<SVGElement>) => {
   return (
     <svg
       {...rest}
-      width={width}
-      height={height}
       viewBox="0 0 32 28"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
