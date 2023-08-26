@@ -67,6 +67,7 @@ const Countdown: React.FC<CountdownProps> = ({
   answerPercentage,
 }) => {
   const router = useRouter();
+  const { user } = useAppContext();
   const [delta, setDelta] = useState(
     Math.floor((timestamp.toMillis() - Date.now()) / 1000)
   );
@@ -87,6 +88,12 @@ const Countdown: React.FC<CountdownProps> = ({
       await updateDoc(studySessionRef, {
         ongoing: false,
         score,
+      });
+      const userRef = doc(firestore, "user_attributes", user!.uid);
+      const userInfo = await getDoc(userRef);
+
+      await updateDoc(userRef, {
+        experience: userInfo.data()?.experience + score,
       });
       router.push(`/results/${quizId}`);
     };
