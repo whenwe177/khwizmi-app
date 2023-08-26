@@ -1,4 +1,11 @@
-import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { pdfjs } from "react-pdf";
 import { useDropzone } from "react-dropzone";
 import { Inter } from "next/font/google";
@@ -6,16 +13,21 @@ import Upload from "./Svg/Upload";
 import { toast } from "react-toastify";
 import File from "./Svg/File";
 import { parsePdf } from "@/utils/pdf";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
 
 interface Props extends React.PropsWithChildren {
   fileUpload: File | null;
-  setFileUpload: Dispatch<SetStateAction<File | null>>
+  setFileUpload: Dispatch<SetStateAction<File | null>>;
 }
 
 const inter = Inter({ subsets: ["latin"] });
 
-const PdfUploader: React.FC<Props> = ({ children, fileUpload, setFileUpload }) => {
-
+const PdfUploader: React.FC<Props> = ({
+  children,
+  fileUpload,
+  setFileUpload,
+}) => {
   const onDrop = useCallback((files: File[]) => {
     const uploadedFile = files[0];
     setFileUpload(uploadedFile);
@@ -38,11 +50,13 @@ const PdfUploader: React.FC<Props> = ({ children, fileUpload, setFileUpload }) =
   };
 
   return (
-    <form
+    <motion.form
+      initial={{ scale: 0.75 }}
+      animate={{ scale: 1 }}
       onSubmit={onFormSubmit}
       className={`${inter.className} flex flex-col items-center p-8 gap-4`}
     >
-      <h1 className="font-bold text-lg text-purple1">
+      <h1 className="font-bold text-lg text-white">
         Upload Your Study Material
       </h1>
       <div
@@ -55,16 +69,16 @@ const PdfUploader: React.FC<Props> = ({ children, fileUpload, setFileUpload }) =
         {fileUpload == null ? (
           <>
             <input {...getInputProps()} />
-            <Upload color="#6D6F62" width={40} height={40} />
-            <p className="text-sm text-gray-500">Drag & drop files here</p>
-            <button
-              className="bg-blue1 text-sm font-semibold rounded-md py-2 px-8 text-white"
+            <Upload color="#FFFFFF" width={40} height={40} />
+            <p className="text-sm text-gray-200">Drag & drop files here</p>
+            <Button
+              className="bg-blue1 hover:bg-blue-900 text-sm font-semibold rounded-md py-2 px-8 text-white"
               type="button"
               onClick={open}
             >
               Browse
-            </button>
-            <p className="text-gray-500 font-semibold text-base">PDF only</p>
+            </Button>
+            <p className="font-bold text-white">PDF only</p>
           </>
         ) : (
           <>
@@ -81,7 +95,7 @@ const PdfUploader: React.FC<Props> = ({ children, fileUpload, setFileUpload }) =
         )}
       </div>
       {children}
-    </form>
+    </motion.form>
   );
 };
 

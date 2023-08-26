@@ -23,25 +23,54 @@ const AppProvider: React.FC<PropsWithChildren> = ({ children }) => {
   useEffect(() => {
     return onAuthStateChanged(auth, async (user) => {
       setUser(user);
-      if (user && ['/', '/quiz', '/study'].includes(router.asPath)) {
-        const studySessionsRef = collection(firestore, 'study_session')
-        const ongoingStudySession = query(studySessionsRef, where('uid', "==", user.uid), where('ongoing', "==", true), limit(1));
+      if (user && ["/", "/quiz", "/study"].includes(router.asPath)) {
+        const studySessionsRef = collection(firestore, "study_session");
+        const ongoingStudySession = query(
+          studySessionsRef,
+          where("uid", "==", user.uid),
+          where("ongoing", "==", true),
+          limit(1)
+        );
         const studySessionSnapshot = await getDocs(ongoingStudySession);
         if (studySessionSnapshot.size) {
-          studySessionSnapshot.docs.forEach(doc => {
+          studySessionSnapshot.docs.forEach((doc) => {
             const data = doc.data() as any;
-            if (new Date(data.study_end_time.seconds*1000).getTime() < Date.now()) {
-              return router.push('/quiz');
+            if (
+              new Date(data.study_end_time.seconds * 1000).getTime() <
+              Date.now()
+            ) {
+              return router.push("/quiz");
             }
-            return router.push('/study');
-          })
+            return router.push("/study");
+          });
         }
       }
       setLoading(false);
     });
   }, []);
 
-  return <AppContext.Provider value={{ user }}>{!loading && children}</AppContext.Provider>;
+  if (loading) {
+    return (
+      <main
+        style={{
+          background: "linear-gradient(180deg, #0E032F 0%, #283472 100%)",
+        }}
+        className="min-h-screen w-full overflow-auto flex flex-col items-center justify-center"
+      >
+        <div
+          className="w-full h-screen absolute top-0 pointer-events-none"
+          style={{
+            background: 'url("bg1.png")',
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "cover",
+            backgroundPositionY: "150px",
+          }}
+        />
+      </main>
+    );
+  }
+
+  return <AppContext.Provider value={{ user }}>{children}</AppContext.Provider>;
 };
 
 const useAppContext = () => useContext(AppContext);

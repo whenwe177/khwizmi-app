@@ -7,8 +7,10 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import clsx from "clsx";
 import { useMutation } from "@tanstack/react-query";
 import { addDoc, collection, Timestamp } from "firebase/firestore";
-import { nanoid }from "nanoid"
+import { nanoid } from "nanoid";
 import { useRouter } from "next/router";
+import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
 
 async function uploadFile(file: File) {
   const storageRef = ref(storage, nanoid());
@@ -25,53 +27,76 @@ export default function Home() {
   const router = useRouter();
   const startStudying = useMutation({
     onSuccess: () => {
-      router.push('/study');
+      router.push("/study");
     },
     mutationFn: async () => {
       if (!fileUpload || !studyDuration || !user) return;
       const pdfUrl = await uploadFile(fileUpload);
-      const studySessionEnd = new Date(new Date().getTime() + studyDuration * 60000);
+      const studySessionEnd = new Date(
+        new Date().getTime() + studyDuration * 60000
+      );
       await addDoc(collection(firestore, "study_session"), {
         ongoing: true,
-        pages: Array.from(selectedPages).sort((a,b) => (a - b)),
+        pages: Array.from(selectedPages).sort((a, b) => a - b),
         pdf_url: pdfUrl,
         uid: user.uid,
-        study_end_time: Timestamp.fromDate(studySessionEnd)
-      })
+        study_end_time: Timestamp.fromDate(studySessionEnd),
+      });
     },
   });
 
   return (
-    <main>
-      <div className="absolute">{user ? `Hi, ${user.displayName}` : ""}</div>
+    <main
+      style={{
+        background: "linear-gradient(180deg, #0E032F 0%, #283472 100%)",
+      }}
+      className="min-h-screen w-full overflow-auto flex flex-col items-center justify-center"
+    >
+      <div
+        className="w-full h-screen fixed top-0 pointer-events-none"
+        style={{
+          background: 'url("bg1.png")',
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "cover",
+          backgroundPositionY: "150px",
+        }}
+      />
       <PdfUploader fileUpload={fileUpload} setFileUpload={setFileUpload}>
         <div className="flex mt-4 gap-4 items-center">
-          <label htmlFor="minutes">Study duration</label>
-          <select onChange={(e) => setStudyDuration(parseInt(e.target.value))} id="minutes">
-            {Array.from(new Array(61), (_, i) => i).map((min) => (
-              <option key={min} value={min}>
-                {min}
-              </option>
-            ))}
-          </select>
-          <span>minute(s)</span>
-          <button
+          <label className="text-white font-bold w-56" htmlFor="minutes">
+            <span className="font-normal">Study duration: </span>
+            {studyDuration || "0"} minute(s)
+          </label>
+          <Slider
+            className="w-[300px]"
+            onValueChange={(value) => setStudyDuration(value[0])}
+            defaultValue={[0]}
+            max={60}
+            step={1}
+          />
+          <Button
+            size={"lg"}
             onClick={() => startStudying.mutate()}
-            disabled={!(selectedPages.size && studyDuration)}
-            className={clsx("py-2 px-14 font-semibold rounded-md text-white", {
+            disabled={
+              !(selectedPages.size && studyDuration) || startStudying.isLoading
+            }
+            className={clsx("font-semibold rounded-md text-white z-10", {
               "bg-slate-300": !(selectedPages.size && studyDuration),
-              "bg-green1": (selectedPages.size && studyDuration),
+              "bg-green-500 hover:bg-green-800": selectedPages.size && studyDuration,
             })}
           >
             Start Studying!
-          </button>
+          </Button>
         </div>
       </PdfUploader>
-      <ChoosePage
-        selectedPages={selectedPages}
-        setSelectedPages={setSelectedPages}
-        file={fileUpload!}
-      />
+
+      {fileUpload && (
+        <ChoosePage
+          selectedPages={selectedPages}
+          setSelectedPages={setSelectedPages}
+          file={fileUpload}
+        />
+      )}
     </main>
   );
 }
