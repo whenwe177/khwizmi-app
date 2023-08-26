@@ -24,15 +24,17 @@ const PagesPreview = ({
       )}
     >
       {pages.map((i) => (
-        <div className="relative">
+        <div key={i} className="relative">
           <Page
             renderAnnotationLayer={false}
             renderTextLayer={false}
             scale={0.15}
-            key={i}
             pageNumber={i}
           />
-          <div onClick={() => onDelete(i)} className="w-5 h-5 absolute rounded-full top-0 right-0 !cursor-pointer">
+          <div
+            onClick={() => onDelete(i)}
+            className="w-5 h-5 absolute rounded-full top-0 right-0 !cursor-pointer"
+          >
             ×
           </div>
         </div>
@@ -44,11 +46,11 @@ const PagesPreview = ({
 const ChoosePage = ({
   selectedPages,
   setSelectedPages,
-  file
+  file,
 }: {
   selectedPages: Set<number>;
   setSelectedPages: React.Dispatch<React.SetStateAction<Set<number>>>;
-  file: File
+  file: File;
 }) => {
   const [totalPages, setTotalPages] = useState(0);
 
@@ -76,9 +78,10 @@ const ChoosePage = ({
         {Array.from(new Array(totalPages), (_, i) => i + 1).map((i) => (
           <Page
             onClick={() => onPageSelect(i)}
+            scale={0.8}
             className={clsx(
               "cursor-pointer",
-              selectedPages.has(i) && "outline outline-2 outline-blue-600"
+              selectedPages.has(i) && "outline outline-3 outline-red-600"
             )}
             renderTextLayer={false}
             key={i}

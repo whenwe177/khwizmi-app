@@ -1,22 +1,20 @@
 import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from "react";
-import * as pdfjsLib from "pdfjs-dist";
+import { pdfjs } from "react-pdf";
 import { useDropzone } from "react-dropzone";
-import { useAppContext } from "@/context/AppContext";
 import { Inter } from "next/font/google";
 import Upload from "./Svg/Upload";
 import { toast } from "react-toastify";
 import File from "./Svg/File";
+import { parsePdf } from "@/utils/pdf";
 
-interface Props {
+interface Props extends React.PropsWithChildren {
   fileUpload: File | null;
   setFileUpload: Dispatch<SetStateAction<File | null>>
 }
 
 const inter = Inter({ subsets: ["latin"] });
 
-const PdfUploader: React.FC<Props> = ({ fileUpload, setFileUpload }) => {
-  
-  const { setContent } = useAppContext();
+const PdfUploader: React.FC<Props> = ({ children, fileUpload, setFileUpload }) => {
 
   const onDrop = useCallback((files: File[]) => {
     const uploadedFile = files[0];
@@ -33,19 +31,10 @@ const PdfUploader: React.FC<Props> = ({ fileUpload, setFileUpload }) => {
 
   const onFormSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
-
-    if (fileUpload == null) {
+    if (!fileUpload) {
       toast.error("Please upload a PDF file.");
       return;
     }
-    const buffer = await fileUpload?.arrayBuffer();
-    const loadingTask = pdfjsLib.getDocument(buffer!);
-
-    const pdf = await loadingTask.promise;
-    const page = await pdf.getPage(1);
-    const result = await page.getTextContent();
-    const resultString = result.items.map((item: any) => item.str).join("");
-    setContent(resultString);
   };
 
   return (
@@ -91,11 +80,7 @@ const PdfUploader: React.FC<Props> = ({ fileUpload, setFileUpload }) => {
           </>
         )}
       </div>
-      <div className="my-4 flex flex-row justify-end w-full">
-        <button className="bg-green1 py-2 px-14 font-semibold rounded-md text-white">
-          Upload
-        </button>
-      </div>
+      {children}
     </form>
   );
 };
