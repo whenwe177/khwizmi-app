@@ -6,4 +6,6 @@ const ResultPage = () => {
   )
 }
 
+ResultPage.auth = true;
+
 export default ResultPage

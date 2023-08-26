@@ -94,4 +94,6 @@ const QuizPage = () => {
   );
 };
 
+QuizPage.auth = true;
+
 export default QuizPage;
