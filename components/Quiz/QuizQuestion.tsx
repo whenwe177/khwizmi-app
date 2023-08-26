@@ -62,7 +62,7 @@ const QuizQuestion = ({
           )}
         >
           <Circle className="w-[50px] h-[50px]" fill="#FFE483" />
-          <p className="text-white text-lg font-bold">{choices.a}</p>
+          <p className="text-white text-lg font-bold">{choices.b}</p>
         </Button>
         <Button
           onClick={() => onUserAnswerChange(idx, "c")}
@@ -100,7 +100,7 @@ const QuizQuestion = ({
           )}
         >
           <Moon className="w-[50px] h-[50px]" fill="#FF84C6" />
-          <p className="text-white text-lg font-bold">{choices.c}</p>
+          <p className="text-white text-lg font-bold">{choices.d}</p>
         </Button>
       </div>
     </div>

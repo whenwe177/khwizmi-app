@@ -176,7 +176,7 @@ const Quiz: React.FC<Props> = ({ quiz, quizId, contentLength }) => {
           />
         </div>
 
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="popLayout">
           <motion.div
             key={currentQuestion}
             variants={wrapperVariants}

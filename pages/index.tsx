@@ -9,7 +9,7 @@ import { signInWithPopup } from "firebase/auth";
 import { auth, firestore, googleProvider } from "@/firebase";
 import Google from "@/components/Svg/Google";
 import { useRouter } from "next/router";
-import { collection, doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
 const Stars = () => {
   return (
@@ -89,7 +89,8 @@ const Home = () => {
     if (getUser.data() == null) {
       await setDoc(usersRef, {
         experience: 0,
-        name: user.user.displayName
+        name: user.user.displayName,
+        photo_url: user.user.photoURL
       })
     }
   };
