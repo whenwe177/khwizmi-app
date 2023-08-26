@@ -31,4 +31,6 @@ interface StudySession {
 interface UserAttrs {
   uid: string;
   experience: number;
+  photo_url: string;
+  name: string;
 }
