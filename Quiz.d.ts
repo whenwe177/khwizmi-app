@@ -1,3 +1,5 @@
+import { Timestamp } from "firebase/firestore";
+
 type Choices = "a" | "b" | "c" | "d";
 
 interface Answer {
@@ -5,7 +7,7 @@ interface Answer {
   reason: string;
 }
 
-interface QuizQuestion {
+interface Question {
   expected_duration: number;
   question: string;
   choices: Record<Choices, string>;
@@ -17,8 +19,9 @@ interface StudySession {
   pages: number[];
   pdf_url: string;
   quiz?: QuizQuestion[];
-  quiz_end_time?: number;
-  study_end_time: number;
+  answers?: Choices | null [];
+  quiz_end_time?: Timestamp;
+  study_end_time: Timestamp;
   uid: string;
 }
 
