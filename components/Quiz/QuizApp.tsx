@@ -8,14 +8,8 @@ interface Props {
 const Quiz: React.FC<Props> = ({ quiz }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [userAnswers, setUserAnswers] = useState<Choices | null[]>(quiz.map(() => null));
-  const quizEndTime = useRef(0);
 
   useEffect(() => {
-    quizEndTime.current = quiz.reduce(
-      (prev, current) => prev + current.expected_duration,
-      0
-    );
-
   }, []);
 
   return (
