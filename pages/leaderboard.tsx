@@ -14,7 +14,6 @@ import {
 import { firestore } from "@/firebase";
 import { useQuery } from "@tanstack/react-query";
 import { useAppContext } from "@/context/AppContext";
-import Image from "next/image";
 import { UserAttrs } from "@/Quiz";
 import GradCap from "@/components/Svg/GradCap";
 import Medal from "@/components/Svg/Medal";
@@ -26,8 +25,8 @@ const LeaderboardPage = () => {
   const userRef = collection(firestore, "user_attributes");
   const q = query(
     userRef,
-    orderBy("experience", "desc")
-    // limit(5)
+    orderBy("experience", "desc"),
+    limit(5)
   );
   const { data, isLoading, isError, isSuccess } = useQuery(["leaderboard"], {
     queryFn: async () => {
@@ -268,5 +267,7 @@ const LeaderboardPage = () => {
     </div>
   );
 };
+
+LeaderboardPage.auth = true;
 
 export default LeaderboardPage;
