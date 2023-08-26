@@ -33,7 +33,6 @@ const QuizPage = () => {
       return questions;
     },
     retry: false,
-    retryDelay: Infinity,
   });
 
   const studySessionRef = collection(firestore, "study_session");
@@ -83,6 +82,7 @@ const QuizPage = () => {
       }
       return { activeSession, activeSessionID, length: content.length };
     },
+    staleTime: Infinity,
   });
 
   if (isLoading) return <p>Hello</p>;

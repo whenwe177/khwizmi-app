@@ -16,7 +16,6 @@ const ResultPage = () => {
   const { data, isLoading, isError } = useQuery(["result"], {
     queryFn: async () => {
       const result = await getDoc(documentRef);
-      const data = result.data() as StudySession;
       return result.data() as StudySession;
     },
     staleTime: Infinity
