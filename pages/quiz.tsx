@@ -1,5 +1,6 @@
 import { Question, StudySession } from "@/Quiz";
 import QuizApp from "@/components/Quiz/QuizApp";
+import { useAppContext } from "@/context/AppContext";
 import { firestore } from "@/firebase";
 import { parsePdf } from "@/utils/pdf";
 import { useMutation } from "@tanstack/react-query";
@@ -13,14 +14,18 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
+import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import { toast } from "react-toastify";
 
 const QuizPage = () => {
   const [quiz, setQuiz] = useState<StudySession | null>(null);
   const [quizId, setQuizId] = useState("");
   const [isError, setError] = useState(false);
   const [contentLength, setContentLength] = useState(0);
+
+  const router = useRouter();
+  const {user} = useAppContext();
+
 
   const { mutateAsync } = useMutation({
     mutationFn: async (content: string) => {
@@ -38,7 +43,7 @@ const QuizPage = () => {
   const activeStudySessionQuery = query(
     studySessionRef,
     where("ongoing", "==", true),
-    where("uid", "==", "wizzy"),
+    where("uid", "==", user!.uid),
     limit(1)
   );
 
@@ -46,9 +51,12 @@ const QuizPage = () => {
     const getStudySession = async () => {
       try {
         const result = await getDocs(activeStudySessionQuery);
+        if (result.size === 0) router.push("/");
+
         const activeSessions = result.docs;
 
         const activeSession = activeSessions[0].data() as StudySession;
+        if (Date.now() < activeSession.study_end_time.toMillis()) router.push("/study");
 
         const content = await parsePdf(activeSession.pdf_url, activeSession.pages);
         const activeSessionID = activeSessions[0].id;
@@ -69,7 +77,8 @@ const QuizPage = () => {
           await updateDoc(updatedDocument, {
             quiz: data,
             quiz_end_time: Timestamp.fromMillis(quizEndTime),
-            duration: timeToAccomplishTask
+            duration: timeToAccomplishTask,
+
           });
           activeSession.quiz = data;
           activeSession.quiz_end_time = Timestamp.fromMillis(quizEndTime);
@@ -101,6 +110,6 @@ const QuizPage = () => {
   );
 };
 
-// QuizPage.auth = true;
+QuizPage.auth = true;
 
 export default QuizPage;

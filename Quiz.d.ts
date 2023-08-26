@@ -25,6 +25,7 @@ interface StudySession {
   study_end_time: Timestamp;
   uid: string;
   duration?: number;
+  is_result_viewed?: boolean;
 }
 
 interface UserAttrs {
