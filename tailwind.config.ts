@@ -19,7 +19,12 @@ module.exports = {
       colors: {
         purple1: "#1A184E",
         blue1: "#0163FF",
+        blue2: "#004CC6",
+        blue3: "#0059E5",
+        blue4: "#7cafff",
         green1: "#96A630",
+        green2: "#CAEA0E",
+        green3: "#A2BD00",
         yellow1: "#FFC551",
         bg1darkgradient: "#0f0330",
         bg1lightgradient: "#283471",
