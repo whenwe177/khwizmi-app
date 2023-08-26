@@ -113,6 +113,7 @@ const Study = () => {
     await updateDoc(doc(firestore, "study_session", studySession.data.id), {
       study_end_time: Timestamp.fromDate(new Date())
     })
+    router.push('/quiz')
   }
 
   if (studySession.isLoading || fileData.isLoading) {
