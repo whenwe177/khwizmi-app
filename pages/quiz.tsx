@@ -1,6 +1,7 @@
 import { Question, StudySession } from "@/Quiz";
 import QuizApp from "@/components/Quiz/QuizApp";
 import { firestore } from "@/firebase";
+import { parsePdf } from "@/utils/pdf";
 import { useMutation } from "@tanstack/react-query";
 import {
   Timestamp,
@@ -19,6 +20,7 @@ const QuizPage = () => {
   const [quiz, setQuiz] = useState<StudySession | null>(null);
   const [quizId, setQuizId] = useState("");
   const [isError, setError] = useState(false);
+  const [contentLength, setContentLength] = useState(0);
 
   const { mutateAsync } = useMutation({
     mutationFn: async (content: string) => {
@@ -42,11 +44,12 @@ const QuizPage = () => {
   useEffect(() => {
     const getStudySession = async () => {
       try {
-        const content = "";
         const result = await getDocs(activeStudySessionQuery);
         const activeSessions = result.docs;
 
         const activeSession = activeSessions[0].data() as StudySession;
+
+        const content = await parsePdf(activeSession.pdf_url, activeSession.pages);
         const activeSessionID = activeSessions[0].id;
 
         if (activeSession.quiz == null) {
@@ -71,6 +74,7 @@ const QuizPage = () => {
         }
         setQuiz(activeSession);
         setQuizId(activeSessionID);
+        setContentLength(content.length);
       } catch (err) {
         setError(true);
         console.error(err);
@@ -89,7 +93,7 @@ const QuizPage = () => {
 
   return (
     <div>
-      <QuizApp quiz={quiz!} quizId={quizId} />
+      <QuizApp quiz={quiz!} quizId={quizId} contentLength={contentLength}/>
     </div>
   );
 };
