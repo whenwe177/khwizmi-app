@@ -22,7 +22,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { DialogClose } from "@radix-ui/react-dialog";
-import Link from "next/link";
 
 const useTimer = ({ onTimerEnd }: { onTimerEnd: () => void }) => {
   const timerEnd = useRef(onTimerEnd);

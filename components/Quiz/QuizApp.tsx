@@ -1,13 +1,25 @@
 import React, { useEffect, useRef, useState } from "react";
 import QuizQuestion from "./QuizQuestion";
-import { Timestamp, doc, updateDoc } from "firebase/firestore";
+import { Timestamp, doc, getDoc, updateDoc } from "firebase/firestore";
 import { firestore } from "@/firebase";
 import { Choices, StudySession } from "@/Quiz";
-import router, { useRouter } from "next/router";
+import { useRouter } from "next/router";
 import { calculateScore } from "@/utils/calculateScore";
 import Logo from "../Logo";
 import { motion, AnimatePresence } from "framer-motion";
 import Arrow from "../Svg/Arrow";
+import { useAppContext } from "@/context/AppContext";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { DialogClose } from "@radix-ui/react-dialog";
 
 interface Props {
   quiz: StudySession;
@@ -95,6 +107,7 @@ const Quiz: React.FC<Props> = ({ quiz, quizId, contentLength }) => {
     (quiz.answers as (Choices | null)[]) ?? quiz.quiz?.map(() => null)!
   );
   const router = useRouter();
+  const { user } = useAppContext();
 
   const invalidateQuiz = async () => {
     const score = calculateScore(
@@ -105,6 +118,12 @@ const Quiz: React.FC<Props> = ({ quiz, quizId, contentLength }) => {
     await updateDoc(studySessionRef, {
       ongoing: false,
       score,
+    });
+    const userRef = doc(firestore, "user_attributes", user!.uid);
+    const userInfo = await getDoc(userRef);
+
+    await updateDoc(userRef, {
+      experience: userInfo.data()?.experience + score,
     });
     router.push(`/results/${quizId}`);
   };
@@ -187,12 +206,34 @@ const Quiz: React.FC<Props> = ({ quiz, quizId, contentLength }) => {
             </motion.button>
           )}
         </div>
-        <button
-          className="bg-yellow1 text-black text-lg rounded-lg px-10 py-2 font-bold"
-          onClick={invalidateQuiz}
-        >
-          Finish
-        </button>
+
+        <Dialog>
+          <DialogTrigger>
+            <Button className="bg-yellow1 text-black text-lg rounded-lg px-10 py-2 font-bold">
+              Finish
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>You still have time!</DialogTitle>
+              <DialogDescription>
+                Your attempt will be submited immideately. You've got time to
+                continue answering the questions. Are you sure about this?
+              </DialogDescription>
+              <DialogFooter>
+                <DialogClose>
+                  <Button variant={"ghost"}>Nevermind</Button>
+                </DialogClose>
+                <Button
+                  onClick={invalidateQuiz}
+                  className="bg-yellow1 hover:bg-yellow-600 text-black"
+                >
+                  Yep, I'm done!
+                </Button>
+              </DialogFooter>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
       </div>
     </>
   );
