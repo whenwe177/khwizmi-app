@@ -38,6 +38,7 @@ const QuizPage = () => {
   const activeStudySessionQuery = query(
     studySessionRef,
     where("ongoing", "==", true),
+    where("uid", "==", "wizzy"),
     limit(1)
   );
 
@@ -68,9 +69,11 @@ const QuizPage = () => {
           await updateDoc(updatedDocument, {
             quiz: data,
             quiz_end_time: Timestamp.fromMillis(quizEndTime),
+            duration: timeToAccomplishTask
           });
           activeSession.quiz = data;
           activeSession.quiz_end_time = Timestamp.fromMillis(quizEndTime);
+          activeSession.duration = timeToAccomplishTask
         }
         setQuiz(activeSession);
         setQuizId(activeSessionID);
@@ -87,7 +90,7 @@ const QuizPage = () => {
   
   if (isError) return <p>Error</p>;
 
-  const isLoading = quiz?.quiz == null || quiz?.quiz_end_time == null
+  const isLoading = quiz?.quiz == null || quiz?.quiz_end_time == null || quiz?.duration == null
   
   if (isLoading) return <p>Loading</p>;
 
@@ -98,6 +101,6 @@ const QuizPage = () => {
   );
 };
 
-QuizPage.auth = true;
+// QuizPage.auth = true;
 
 export default QuizPage;

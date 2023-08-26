@@ -15,6 +15,7 @@ interface Question {
 }
 
 interface StudySession {
+  score: number;
   ongoing: boolean;
   pages: number[];
   pdf_url: string;
@@ -23,6 +24,7 @@ interface StudySession {
   quiz_end_time?: Timestamp;
   study_end_time: Timestamp;
   uid: string;
+  duration?: number;
 }
 
 interface UserAttrs {

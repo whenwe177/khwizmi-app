@@ -3,7 +3,7 @@ import QuizQuestion from "./QuizQuestion";
 import { Timestamp, doc, updateDoc } from "firebase/firestore";
 import { firestore } from "@/firebase";
 import { Choices, StudySession } from "@/Quiz";
-import { useRouter } from "next/router";
+import router, { useRouter } from "next/router";
 import { calculateScore } from "@/utils/calculateScore";
 
 interface Props {
@@ -14,6 +14,7 @@ interface Props {
 
 interface CountdownProps {
   timestamp: Timestamp;
+  duration: number;
   quizId: string;
   contentLength: number;
   answerPercentage: number;
@@ -21,13 +22,15 @@ interface CountdownProps {
 
 const Countdown: React.FC<CountdownProps> = ({
   timestamp,
+  duration,
   quizId,
   contentLength,
   answerPercentage,
 }) => {
-  const initialDelta = useRef(Math.floor((timestamp.toMillis() - Date.now()) / 1000));
   const router = useRouter();
-  const [delta, setDelta] = useState(initialDelta.current);
+  const [delta, setDelta] = useState(
+    Math.floor((timestamp.toMillis() - Date.now()) / 1000)
+  );
   const intervalRef = useRef<NodeJS.Timeout | null>();
   const decrementTimer = () => setDelta((prev) => prev - 1);
 
@@ -41,11 +44,12 @@ const Countdown: React.FC<CountdownProps> = ({
     const studySessionRef = doc(firestore, "study_session", quizId);
 
     const invalidateQuiz = async () => {
+      const score = calculateScore(duration, contentLength, answerPercentage);
       await updateDoc(studySessionRef, {
         ongoing: false,
-        score: calculateScore(initialDelta.current, contentLength, answerPercentage),
+        score,
       });
-      router.push("/results");
+      router.push(`/results/${quizId}`);
     };
 
     invalidateQuiz();
@@ -65,6 +69,20 @@ const Quiz: React.FC<Props> = ({ quiz, quizId, contentLength }) => {
   const [userAnswers, setUserAnswers] = useState<(Choices | null)[]>(
     (quiz.answers as (Choices | null)[]) ?? quiz.quiz?.map(() => null)!
   );
+  const router = useRouter();
+
+  const invalidateQuiz = async () => {
+    const score = calculateScore(
+      quiz.duration!,
+      contentLength,
+      answerPercentage
+    );
+    await updateDoc(studySessionRef, {
+      ongoing: false,
+      score,
+    });
+    router.push(`/results/${quizId}`);
+  };
 
   const answerPercentage =
     userAnswers.reduce((prev, current, idx) => {
@@ -102,10 +120,12 @@ const Quiz: React.FC<Props> = ({ quiz, quizId, contentLength }) => {
         />
         <Countdown
           timestamp={quiz.quiz_end_time!}
+          duration={quiz.duration!}
           quizId={quizId}
           contentLength={contentLength}
           answerPercentage={answerPercentage}
         />
+        <button onClick={invalidateQuiz}>Finish</button>
       </div>
     </>
   );
