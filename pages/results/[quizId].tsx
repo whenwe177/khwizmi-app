@@ -8,6 +8,7 @@ import { doc, getDoc } from "firebase/firestore";
 import AccordionListOfQuizzes from "@/components/AccordionListOfQuizzes";
 import bg from "@/public/bg1.png";
 import Khwarizmi from "@/components/Khwarizmi";
+import { MotionValue } from "framer-motion";
 
 const ResultPage = () => {
   const router = useRouter();
@@ -35,14 +36,13 @@ const ResultPage = () => {
         background: `url(${bg.src}), linear-gradient(180deg, #0E032F 0%, #283472 100%)`,
         backgroundSize: "cover",
       }}
-      className="h-screen p-12 flex flex-col items-center gap-3"
+      className="min-h-screen p-12 flex flex-col items-center gap-3"
     >
       <h1 className="text-white font-bold text-5xl">Keep it up!</h1>
-      <div className="h-[400px] relative">
-        <Khwarizmi posX={-600} posY={-10} width={400} height={400} />
+      <div className="h-[400px] relative flex items-center">
+        <Khwarizmi posX={0} posY={0} width={400} height={400} position={"relative" as any}/>
         <div
-          className=" bg-slate-100 py-4 px-4 w-80 flex flex-col gap-2 rounded-md drop-shadow-lg"
-          style={{ position: "absolute", left: "-150px", top: "40%" }}
+          className=" bg-slate-100 py-4 px-4 w-80 h-fit flex flex-col gap-2 rounded-md drop-shadow-lg"
         >
           <div className="box absolute w-8 h-8 bg-slate-100 top-12 -left-2 rotate-45 -z-10"></div>
           <h1 className="text-lg">
