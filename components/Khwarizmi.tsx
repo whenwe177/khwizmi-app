@@ -1,19 +1,38 @@
-import React, { useEffect, useState } from "react";
-import {  motion, useMotionValue, useSpring } from "framer-motion";
+import React, { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface Props extends React.SVGAttributes<SVGElement> {
   posX: number;
   posY: number;
   float?: boolean;
+  jokes?: string[];
 }
 
-const Khwarizmi = ({ children, posX, posY, float, ...rest }: Props) => {
+const Khwarizmi = ({ children, posX, posY, float, jokes, ...rest }: Props) => {
   let [rotation, setRotation] = useState(0);
+  const jokeIndex = useRef(0);
+  const [showJoke, setShowJoke] = useState(false);
 
+  useEffect(() => {
+    if (jokes) {
+      let id = setInterval(() => {
+        setShowJoke(true);
+        setTimeout(() => {
+          setShowJoke(false);
+          if (jokeIndex.current >= jokes.length - 1) {
+            jokeIndex.current = 0;
+          } else {
+            jokeIndex.current += 1;
+          }
+        }, 5000);
+      }, 15000);
+      return () => clearInterval(id);
+    }
+  }, [jokes]);
 
   useEffect(() => {
     const trackMouse = (e: MouseEvent) => {
-      const anchor = document.getElementById('anchor')!;
+      const anchor = document.getElementById("anchor")!;
       const rect = anchor.getBoundingClientRect();
       const anchorX = rect.left + rect.width / 2;
       const anchorY = rect.top + rect.height / 2;
@@ -21,21 +40,20 @@ const Khwarizmi = ({ children, posX, posY, float, ...rest }: Props) => {
       const dy = e.clientY - anchorY;
       const dx = e.clientX - anchorX;
 
-      const angle = Math.atan2(dy, dx) * 180 / Math.PI;
-
-      console.log(angle)
+      const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
       setRotation(angle);
-    }
-    addEventListener('mousemove', trackMouse)
-    return () => removeEventListener('mousemove', trackMouse);
+    };
+    addEventListener("mousemove", trackMouse);
+    return () => removeEventListener("mousemove", trackMouse);
   }, []);
+
+  const showJokeBox = showJoke && jokes;
 
   return (
     <motion.div
       id="anchor"
-      layoutId="khwarizmi"
-      layout
-      style={{ position: "absolute" }}
+      className="z-10"
+      style={{ position: "fixed" }}
       initial={{ x: posX, y: posY }}
       animate={{ x: posX, y: float ? posY + 30 : posY }}
       transition={{
@@ -206,7 +224,11 @@ const Khwarizmi = ({ children, posX, posY, float, ...rest }: Props) => {
         </defs>
       </svg>
       <motion.div
-        style={{ top: 205, left: 135, transform: `rotate(${rotation -90}deg)` }}
+        style={{
+          top: 205,
+          left: 135,
+          transform: `rotate(${rotation - 90}deg)`,
+        }}
         id="eye1"
         className="absolute w-8 h-8 bg-white"
       >
@@ -216,7 +238,11 @@ const Khwarizmi = ({ children, posX, posY, float, ...rest }: Props) => {
         />
       </motion.div>
       <motion.div
-        style={{ top: 190, left: 222, transform: `rotate(${rotation -90}deg)`}}
+        style={{
+          top: 190,
+          left: 222,
+          transform: `rotate(${rotation - 90}deg)`,
+        }}
         id="eye2"
         className="absolute w-8 h-8 bg-white"
       >
@@ -225,6 +251,18 @@ const Khwarizmi = ({ children, posX, posY, float, ...rest }: Props) => {
           className="absolute bg-black w-3 h-3 rounded-full bottom-1 left-1/2 -translate-x-1/2"
         />
       </motion.div>
+      <AnimatePresence>
+        {showJokeBox && (
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            exit={{ scale: 0 }}
+            className="absolute text-black text-center flex items-center justify-center w-[400px] h-[250px] -top-[250px] left-[100px] bg-slate-100 rounded-lg p-8 font-bold text-lg"
+          >
+            {jokes[jokeIndex.current]}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 };
