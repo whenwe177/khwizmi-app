@@ -253,7 +253,7 @@ const LeaderboardPage = () => {
         </div>
       )}
       <Link href="/">
-        <Button className="bg-yellow1 text-base font-bold">Back to Home</Button>
+        <Button className="bg-yellow1 hover:bg-yellow2 text-base font-bold text-black">Back to Home</Button>
       </Link>
     </div>
   );
