@@ -9,6 +9,7 @@ import AccordionListOfQuizzes from "@/components/AccordionListOfQuizzes";
 import bg from "@/public/bg1.png";
 import Khwarizmi from "@/components/Khwarizmi";
 import { MotionValue } from "framer-motion";
+import Error from "@/components/Error";
 
 const ResultPage = () => {
   const router = useRouter();
@@ -28,7 +29,7 @@ const ResultPage = () => {
   });
 
   if (isLoading) return;
-  if (isError) return <p>Error</p>;
+  if (isError) return <Error message="An error has occured."/>;
 
   return (
     <div
