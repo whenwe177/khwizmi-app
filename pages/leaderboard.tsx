@@ -224,7 +224,7 @@ const LeaderboardPage = () => {
                 className="w-full h-ful object-cover"
               />
             </div>
-            <p>{currentUser.name}</p>
+            <p>You</p>
           </div>
           <p>{currentUser.experience}</p>
           <div className="flex flex-col items-center">
