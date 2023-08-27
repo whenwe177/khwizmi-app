@@ -2,7 +2,16 @@ import { useAppContext } from "@/context/AppContext";
 import { firestore, storage } from "@/firebase";
 import { useQuery } from "@tanstack/react-query";
 import { getBlob, ref } from "firebase/storage";
-import { Timestamp, collection, doc, getDocs, query, setDoc, updateDoc, where } from "firebase/firestore";
+import {
+  Timestamp,
+  collection,
+  doc,
+  getDocs,
+  query,
+  setDoc,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { Document, Page } from "react-pdf";
@@ -23,6 +32,8 @@ import {
 } from "@/components/ui/dialog";
 import { DialogClose } from "@radix-ui/react-dialog";
 import Loading from "@/components/Loading";
+import Khwarizmi from "@/components/Khwarizmi";
+import { parsePdf } from "@/utils/pdf";
 
 const useTimer = ({ onTimerEnd }: { onTimerEnd: () => void }) => {
   const timerEnd = useRef(onTimerEnd);
@@ -99,6 +110,21 @@ const Study = () => {
     staleTime: Infinity,
   });
 
+  const jokeData = useQuery(["joke_data"], {
+    queryFn: async () => {
+      // @ts-ignore
+      const context = await parsePdf(
+        studySession.data!.data().pdf_url,
+        studySession.data!.data().pages
+      );
+      const response = await fetch("/api/khwizitalk", {
+        method: "POST",
+        body: JSON.stringify({ context }),
+      });
+      return await response.json();
+    },
+  });
+
   useEffect(() => {
     if (studySession.isSuccess) {
       const seconds = Math.floor(
@@ -109,80 +135,92 @@ const Study = () => {
   }, [studySession.isSuccess]);
 
   async function endSession() {
-    if (!studySession.data) return
+    if (!studySession.data) return;
     await updateDoc(doc(firestore, "study_session", studySession.data.id), {
-      study_end_time: Timestamp.fromDate(new Date())
-    })
-    router.push('/quiz')
+      study_end_time: Timestamp.fromDate(new Date()),
+    });
+    router.push("/quiz");
   }
 
   if (studySession.isLoading || fileData.isLoading) {
-    return (
-      <Loading/>
-    );
+    return <Loading />;
   }
 
   return (
-    <main
-      style={{
-        background: "linear-gradient(180deg, #0E032F 0%, #283472 100%)",
-      }}
-      className="min-h-screen w-full overflow-auto flex flex-col items-center lg:items-end justify-center"
-    >
-      <div
-        className="w-full h-screen fixed top-0 pointer-events-none"
-        style={{
-          background: 'url("bg1.png")',
-          backgroundRepeat: "no-repeat",
-          backgroundSize: "cover",
-          backgroundPositionY: "150px",
-        }}
+    <>
+      <Khwarizmi
+        jokes={
+          jokeData.isLoading || jokeData.isError ? undefined : jokeData.data
+        }
+        posX={0}
+        posY={550}
+        width={400}
+        height={400}
       />
-      <Document
-        className={"flex flex-col items-center gap-4 p-4"}
-        loading={null}
-        file={fileData.data}
+      <main
+        style={{
+          background: "linear-gradient(180deg, #0E032F 0%, #283472 100%)",
+        }}
+        className="min-h-screen w-full overflow-auto flex flex-col items-center lg:items-end justify-center"
       >
-        {studySession.data!.data().pages.map((i: number) => (
-          <Page scale={2} loading={null} pageNumber={i} key={i} />
-        ))}
-      </Document>
-      <div className="fixed top-8 left-24 flex items-center gap-4">
-        <div className="h-[80px] w-[250px] rounded-lg bg-yellow1 text-black flex items-center justify-center">
-          <span
-            className={clsx(
-              "text-4xl font-bold",
-              seconds < 60 && "text-red-500"
-            )}
-          >
-            {`${Math.floor(seconds / 60)}`.padStart(2, "0")}:
-            {`${seconds - Math.floor(seconds / 60) * 60}`.padStart(2, "0")}
-          </span>
+        <div
+          className="w-full h-screen fixed top-0 pointer-events-none"
+          style={{
+            background: 'url("bg1.png")',
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "cover",
+            backgroundPositionY: "150px",
+          }}
+        />
+        <Document
+          className={"flex flex-col items-center gap-4 p-4"}
+          loading={null}
+          file={fileData.data}
+        >
+          {studySession.data!.data().pages.map((i: number) => (
+            <Page scale={2} loading={null} pageNumber={i} key={i} />
+          ))}
+        </Document>
+        <div className="fixed top-8 left-24 flex items-center gap-4">
+          <div className="h-[80px] w-[250px] rounded-lg bg-yellow1 text-black flex items-center justify-center">
+            <span
+              className={clsx(
+                "text-4xl font-bold",
+                seconds < 60 && "text-red-500"
+              )}
+            >
+              {`${Math.floor(seconds / 60)}`.padStart(2, "0")}:
+              {`${seconds - Math.floor(seconds / 60) * 60}`.padStart(2, "0")}
+            </span>
+          </div>
+          <Dialog>
+            <DialogTrigger>
+              <Button variant={"destructive"}>End Session</Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>You still have time!</DialogTitle>
+                <DialogDescription>
+                  You will be take to the A.I curated review quiz directly. You
+                  still have time to study! Are you sure about this?
+                </DialogDescription>
+                <DialogFooter>
+                  <DialogClose>
+                    <Button variant={"ghost"}>Nevermind</Button>
+                  </DialogClose>
+                  <Button
+                    onClick={endSession}
+                    className="bg-yellow1 hover:bg-yellow-600 text-black"
+                  >
+                    I'm ready!
+                  </Button>
+                </DialogFooter>
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
         </div>
-        <Dialog>
-          <DialogTrigger>
-            <Button variant={"destructive"}>End Session</Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>You still have time!</DialogTitle>
-              <DialogDescription>
-                You will be take to the A.I curated review quiz directly. You
-                still have time to study! Are you sure about this?
-              </DialogDescription>
-              <DialogFooter>
-                <DialogClose>
-                  <Button variant={"ghost"}>Nevermind</Button>
-                </DialogClose>
-                <Button onClick={endSession} className="bg-yellow1 hover:bg-yellow-600 text-black">
-                  I'm ready!
-                </Button>
-              </DialogFooter>
-            </DialogHeader>
-          </DialogContent>
-        </Dialog>
-      </div>
-    </main>
+      </main>
+    </>
   );
 };
 Study.auth = true;
