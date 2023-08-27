@@ -12,7 +12,11 @@ import Khwarizmi from "@/components/Khwarizmi";
 const ResultPage = () => {
   const router = useRouter();
 
-  const documentRef = doc(firestore, "study_session", router.query.quizId as string);
+  const documentRef = doc(
+    firestore,
+    "study_session",
+    router.query.quizId as string
+  );
 
   const { data, isLoading, isError } = useQuery(["result"], {
     queryFn: async () => {
@@ -21,8 +25,8 @@ const ResultPage = () => {
     },
     staleTime: Infinity,
   });
-  
-  if (isLoading) return ;
+
+  if (isLoading) return;
   if (isError) return <p>Error</p>;
 
   return (
@@ -33,11 +37,29 @@ const ResultPage = () => {
       }}
       className="h-screen p-12 flex flex-col items-center gap-3"
     >
-      <Khwarizmi posX={10} posY={10}/>
-      <p>Keep it up!</p>
-      <h2>You got {data?.correct_answers}/{data?.quiz?.length}</h2>
-      <p>With a score of {data?.score}</p>
-      <AccordionListOfQuizzes quiz={data}/>
+      <h1 className="text-white font-bold text-5xl">Keep it up!</h1>
+      <div className="h-[400px] relative">
+        <Khwarizmi posX={-600} posY={-10} width={400} height={400} />
+        <div
+          className=" bg-slate-100 py-4 px-4 w-80 flex flex-col gap-2 rounded-md drop-shadow-lg"
+          style={{ position: "absolute", left: "-150px", top: "40%" }}
+        >
+          <div className="box absolute w-8 h-8 bg-slate-100 top-12 -left-2 rotate-45 -z-10"></div>
+          <h1 className="text-lg">
+            Congrats! You got{" "}
+            <span className="font-bold text-blue-700">
+              {data?.correct_answers}/{data?.quiz?.length}
+            </span>{" "}
+            correct!
+          </h1>
+          <div className="flex flex-col">
+            <p>XP gained: </p>
+            <h1 className="text-4xl font-bold">+{data.score}</h1>
+          </div>
+        </div>
+      </div>
+
+      <AccordionListOfQuizzes quiz={data} />
     </div>
   );
 };

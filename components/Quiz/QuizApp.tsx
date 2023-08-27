@@ -179,7 +179,7 @@ const Quiz: React.FC<Props> = ({ quiz, quizId, contentLength }) => {
             {currentQuestion + 1}/{userAnswers.length}
           </h1>
           <h1 className="text-white font-semibold text-3xl my-3">
-            Review Quiz
+            It's quiz time!
           </h1>
           <Countdown
             timestamp={quiz.quiz_end_time!}

@@ -102,7 +102,7 @@ const Error: React.FC<ErrorProps> = ({ message }) => {
         <Logo className="h-[32px] w-[32px]" />
         <h1 className="text-white text-1xl font-semibold">Khwizmi</h1>
       </div>
-      ``
+      
       <h1 className="text-white text-8xl font-bold">Uh oh!</h1>
       <p className="text-white text-2xl font-bold">{message}</p>
       <br></br>
