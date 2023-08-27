@@ -19,7 +19,7 @@ async function uploadFile(file: File) {
   return url;
 }
 
-export default function Upload() {
+const Upload = () => {
   const { user } = useAppContext();
   const [showShortcut, setShowShortcut] = useState(false);
   const [selectedPages, setSelectedPages] = useState<Set<number>>(new Set());
@@ -126,3 +126,6 @@ export default function Upload() {
     </main>
   );
 }
+
+Upload.auth = true;
+export default Upload;
