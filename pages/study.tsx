@@ -121,9 +121,14 @@ const Study = () => {
         method: "POST",
         body: JSON.stringify({ context }),
       });
-      return await response.json();
+      const jokes = await response.json();
+      return jokes;
     },
+    enabled: studySession.isSuccess,
+    refetchOnMount: false,
+    staleTime: Infinity,
   });
+
 
   useEffect(() => {
     if (studySession.isSuccess) {
