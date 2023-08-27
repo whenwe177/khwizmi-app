@@ -43,7 +43,7 @@ const LeaderboardPage = () => {
   
 
   if (isLoading) return <Loading/>;
-  if (isError) return <ErrorComponent/>;
+  if (isError) return <ErrorComponent statusCode={0} message={""}/>;
   const top5 = data.slice(0,5);
   const containedInTop5 = top5.map(item => item.uid).includes(user!.uid)
   const indexOfCurrentUser = data.findIndex(mappedUser => mappedUser.uid === user?.uid);
