@@ -18,7 +18,7 @@ const ErrorPage: React.FC<ErrorProps> = ({ statusCode }) => {
   
   return (
   <main>
-  <ErrorDisplay statusCode={statusCode} message="It seems like you're lost..." />
+  <ErrorDisplay message="It seems like you're lost..." />
   </main>
   
   );

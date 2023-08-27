@@ -1,19 +1,14 @@
-import React from 'react';
+import React from "react";
 import bg from "../public/bg1.png";
 
 import KhawarizmiSleeping from "@/components/KhwarizmiSleeping";
-import { motion } from 'framer-motion';
-import Star from './Star';
-import { Button } from '@/components/ui/button';
-import { useAppContext } from '@/context/AppContext';
-import { useRouter } from 'next/router';
+import { motion } from "framer-motion";
+import Star from "./Star";
+import { Button } from "@/components/ui/button";
 import Logo from "@/components/Logo";
-import { signInWithPopup } from "firebase/auth";
-import { auth, firestore, googleProvider } from "@/firebase";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import Link from "next/link";
 
 interface ErrorProps {
-  statusCode: number;
   message: string;
 }
 
@@ -87,68 +82,39 @@ const Stars = () => {
 const KhawarizmiSleepingMotion = () => {
   return (
     <>
-      <motion.div
-        style={{opacity:1, x: 500, y: 120, position: "absolute" }}
-      >
+      <motion.div style={{ opacity: 1, x: 500, y: 120, position: "absolute" }}>
         <KhawarizmiSleeping className="h-[480px] w-[480px]" />
       </motion.div>
     </>
   );
 };
 
-
-const Error: React.FC<ErrorProps> = ({message}) => { 
-  const { user } = useAppContext();
-  const router = useRouter();
-
-  const loginWithGoogle = async () => {
-    const user = await signInWithPopup(auth, googleProvider);
-    const usersRef = doc(firestore, "user_attributes", user.user.uid);
-    const getUser = await getDoc(usersRef);
-    if (getUser.data() == null) {
-      await setDoc(usersRef, {
-        experience: 0,
-        name: user.user.displayName,
-        photo_url: user.user.photoURL
-      })
-    }
-  };
-  
-  const goBackHome = async () => {
-    if (!user) {
-      await loginWithGoogle();
-    }
-
-    router.push("/");
-  }
-  
+const Error: React.FC<ErrorProps> = ({ message }) => {
   return (
-  
-  <div 
-  style={{
-    background: `url(${bg.src}), linear-gradient(180deg, #0E032F 0%, #283472 100%)`,
-    backgroundSize: "cover",
-  }}
-  className="h-screen p-8 flex flex-col items-center gap-3 justify-center"
-  >
-    <div className="flex items-center gap-4 border-b-2 pb-1">
-          <Logo className="h-[32px] w-[32px]" />
-          <h1 className="text-white text-1xl font-semibold">Khwizmi</h1>
-    </div>
-    ``
-    <h1 className="text-white text-8xl font-bold">Uh oh!</h1>
-    <p className="text-white text-2xl font-bold">{message}</p>
-    <br></br>
-    <Button className="bg-yellow1 hover:bg-yellow-600 text-black font-bold" onClick={goBackHome}>
+    <div
+      style={{
+        background: `url(${bg.src}), linear-gradient(180deg, #0E032F 0%, #283472 100%)`,
+        backgroundSize: "cover",
+      }}
+      className="h-screen p-8 flex flex-col items-center gap-3 justify-center"
+    >
+      <div className="flex items-center gap-4 border-b-2 pb-1">
+        <Logo className="h-[32px] w-[32px]" />
+        <h1 className="text-white text-1xl font-semibold">Khwizmi</h1>
+      </div>
+      
+      <h1 className="text-white text-8xl font-bold">Uh oh!</h1>
+      <p className="text-white text-2xl font-bold">{message}</p>
+      <br></br>
+      <Link href="/">
+        <Button className="bg-yellow1 hover:bg-yellow-600 text-black font-bold">
           Go Back to Home
-    </Button>
-    <Stars />
-    <KhawarizmiSleepingMotion />
-
-  </div>
-  
-);
+        </Button>
+      </Link>
+      <Stars />
+      <KhawarizmiSleepingMotion />
+    </div>
+  );
 };
 
 export default Error;
-

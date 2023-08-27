@@ -21,7 +21,6 @@ interface Props extends React.PropsWithChildren {
   setFileUpload: Dispatch<SetStateAction<File | null>>;
 }
 
-const inter = Inter({ subsets: ["latin"] });
 
 const PdfUploader: React.FC<Props> = ({
   children,
@@ -54,7 +53,7 @@ const PdfUploader: React.FC<Props> = ({
       initial={{ scale: 0.75 }}
       animate={{ scale: 1 }}
       onSubmit={onFormSubmit}
-      className={`${inter.className} flex flex-col items-center p-8 gap-4`}
+      className="flex flex-col items-center p-8 gap-4"
     >
       <h1 className="font-bold text-lg text-white">
         Upload Your Study Material

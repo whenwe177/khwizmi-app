@@ -15,7 +15,7 @@ import {
   where,
 } from "firebase/firestore";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import bg from "@/public/bg1.png";
 import Loading from "@/components/Loading";
 import ErrorComponent from "@/components/Error";
@@ -89,7 +89,7 @@ const QuizPage = () => {
   });
 
   if (isLoading) return <Loading/>;
-  if (isError) return <ErrorComponent statusCode={0} message={""}/>;
+  if (isError) return <ErrorComponent message={"An error has occured."}/>;
 
   return (
     <div

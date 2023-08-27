@@ -1,14 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, MotionValue, motion } from "framer-motion";
 
 interface Props extends React.SVGAttributes<SVGElement> {
+  position?: MotionValue<string>;
   posX: number;
   posY: number;
   float?: boolean;
   jokes?: string[];
 }
 
-const Khwarizmi = ({ children, posX, posY, float, jokes, ...rest }: Props) => {
+const Khwarizmi = ({ children, posX, posY, float, jokes, position, ...rest }: Props) => {
   let [rotation, setRotation] = useState(0);
   const jokeIndex = useRef(0);
   const [showJoke, setShowJoke] = useState(false);
@@ -48,12 +49,13 @@ const Khwarizmi = ({ children, posX, posY, float, jokes, ...rest }: Props) => {
   }, []);
 
   const showJokeBox = showJoke && jokes;
+  const pos = position || "fixed"
 
   return (
     <motion.div
       id="anchor"
       className="z-10"
-      style={{ position: "fixed" }}
+      style={{ position : pos }}
       initial={{ x: posX, y: posY }}
       animate={{ x: posX, y: float ? posY + 30 : posY }}
       transition={{
