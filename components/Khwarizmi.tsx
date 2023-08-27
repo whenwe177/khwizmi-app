@@ -26,7 +26,7 @@ const Khwarizmi = ({ children, posX, posY, float, jokes, position, ...rest }: Pr
             jokeIndex.current += 1;
           }
         }, 5000);
-      }, 15000);
+      }, 8000);
       return () => clearInterval(id);
     }
   }, [jokes]);
