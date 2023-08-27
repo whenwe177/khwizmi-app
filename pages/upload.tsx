@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAppContext } from "@/context/AppContext";
 import PdfUploader from "@/components/PdfUpload";
 import ChoosePage from "@/components/ChoosePage";
@@ -19,8 +19,9 @@ async function uploadFile(file: File) {
   return url;
 }
 
-export default function Home() {
+export default function Upload() {
   const { user } = useAppContext();
+  const [showShortcut, setShowShortcut] = useState(false);
   const [selectedPages, setSelectedPages] = useState<Set<number>>(new Set());
   const [fileUpload, setFileUpload] = useState<File | null>(null);
   const [studyDuration, setStudyDuration] = useState<number>(0);
@@ -45,6 +46,14 @@ export default function Home() {
     },
   });
 
+  useEffect(() => {
+    const scrollListener = (e: Event) => {
+      setShowShortcut(window.scrollY > 50);
+    };
+    addEventListener("scroll", scrollListener);
+    return () => removeEventListener("scroll", scrollListener);
+  }, []);
+
   return (
     <main
       style={{
@@ -52,6 +61,15 @@ export default function Home() {
       }}
       className="min-h-screen w-full overflow-auto flex flex-col items-center justify-center"
     >
+      {showShortcut && (
+        <Button
+          onClick={() => window.scrollTo(0, 0)}
+          className="rounded-full w-[60px] h-[60px] fixed bottom-10 right-10 bg-yellow1 hover:bg-yellow-600 text-black font-semibold text-2xl"
+        >
+          ↑
+        </Button>
+      )}
+
       <div
         className="w-full h-screen fixed top-0 pointer-events-none"
         style={{
@@ -81,8 +99,11 @@ export default function Home() {
               !(selectedPages.size && studyDuration) || startStudying.isLoading
             }
             className={clsx("font-semibold rounded-md text-white z-10", {
-              "bg-slate-300": !(selectedPages.size && studyDuration),
-              "bg-green-500 hover:bg-green-800": selectedPages.size && studyDuration,
+              "bg-slate-300":
+                !(selectedPages.size && studyDuration) ||
+                startStudying.isLoading,
+              "bg-green-500 hover:bg-green-800":
+                selectedPages.size && studyDuration,
             })}
           >
             Start Studying!
@@ -91,11 +112,16 @@ export default function Home() {
       </PdfUploader>
 
       {fileUpload && (
-        <ChoosePage
-          selectedPages={selectedPages}
-          setSelectedPages={setSelectedPages}
-          file={fileUpload}
-        />
+        <>
+          <h2 className="text-white font-bold underline text-2xl">
+            Choose up to 5 pages!
+          </h2>
+          <ChoosePage
+            selectedPages={selectedPages}
+            setSelectedPages={setSelectedPages}
+            file={fileUpload}
+          />
+        </>
       )}
     </main>
   );

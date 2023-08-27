@@ -1,6 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
 import OpenAI from "openai";
+import { jsonrepair } from "jsonrepair"
 
 type Data = {
   quiz: string;
@@ -25,11 +26,7 @@ export default async function handler(
         role: "user",
         content: `MATERIAL:${context}`,
       },
-      {
-        role: "user",
-        content:
-          "Use the generate_quiz function to create a perfect quiz (minimum of 8 and maximum of 15 questions) just like what you are known for. Adhering to the description of the parameters is crucial.",
-      },
+      { role: "user", content: "Use the generate_quiz function to return an array of questions to me in valid json"}
     ],
     function_call: { name: "generate_quiz" },
     functions: [
@@ -111,8 +108,8 @@ export default async function handler(
   });
   let quiz: any;
 
-  quiz = JSON.parse(completion.choices[0].message.function_call?.arguments!);
 
+  quiz = JSON.parse(jsonrepair(completion.choices[0].message.function_call?.arguments!));  
   for (let question of quiz.quiz) {
     if (question.expected_duration >= 7 && question.expected_duration < 12) {
       question.expected_duration *= 3;
