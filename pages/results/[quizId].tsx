@@ -10,6 +10,8 @@ import bg from "@/public/bg1.png";
 import Khwarizmi from "@/components/Khwarizmi";
 import { MotionValue } from "framer-motion";
 import Error from "@/components/Error";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 const ResultPage = () => {
   const router = useRouter();
@@ -61,6 +63,14 @@ const ResultPage = () => {
       </div>
 
       <AccordionListOfQuizzes quiz={data} />
+      <div className="flex w-full justify-between my-4">
+        <Link href="/leaderboard">
+          <Button className="bg-blue1 font-semibold">Leaderboard</Button>
+        </Link>
+        <Link href="/">
+          <Button className="bg-yellow1 font-semibold text-black">Back To Home</Button>
+        </Link>
+      </div>
     </div>
   );
 };
