@@ -20,7 +20,7 @@ interface StudySession {
   ongoing: boolean;
   pages: number[];
   pdf_url: string;
-  quiz?: QuizQuestion[];
+  quiz?: Question[];
   answers?: Choices | null [];
   quiz_end_time?: Timestamp;
   study_end_time: Timestamp;

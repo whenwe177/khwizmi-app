@@ -89,7 +89,7 @@ const QuizPage = () => {
   });
 
   if (isLoading) return <Loading/>;
-  if (isError) return <ErrorComponent/>;
+  if (isError) return <ErrorComponent statusCode={0} message={""}/>;
 
   return (
     <div
