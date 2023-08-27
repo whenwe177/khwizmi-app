@@ -106,11 +106,11 @@ const Error: React.FC<ErrorProps> = ({ message }) => {
       <h1 className="text-white text-8xl font-bold">Uh oh!</h1>
       <p className="text-white text-2xl font-bold">{message}</p>
       <br></br>
-      <Link href="/">
+      <a href="/">
         <Button className="bg-yellow1 hover:bg-yellow-600 text-black font-bold">
           Go Back to Home
         </Button>
-      </Link>
+      </a>
       <Stars />
       <KhawarizmiSleepingMotion />
     </div>

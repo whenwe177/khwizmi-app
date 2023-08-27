@@ -21,14 +21,13 @@ import University from "@/components/Svg/University";
 import Book from "@/components/Svg/Book";
 import Loading from "@/components/Loading";
 import ErrorComponent from "@/components/Error";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 const LeaderboardPage = () => {
   const { user } = useAppContext();
   const userRef = collection(firestore, "user_attributes");
-  const q = query(
-    userRef,
-    orderBy("experience", "desc")
-  );
+  const q = query(userRef, orderBy("experience", "desc"));
   const { data, isLoading, isError, isSuccess } = useQuery(["leaderboard"], {
     queryFn: async () => {
       const results = await getDocs(q);
@@ -38,15 +37,15 @@ const LeaderboardPage = () => {
     },
   });
 
-  
-
-  if (isLoading) return <Loading/>;
-  if (isError) return <ErrorComponent message={"An error occured."}/>;
-  const top5 = data.slice(0,5);
-  const containedInTop5 = top5.map(item => item.uid).includes(user!.uid)
-  const indexOfCurrentUser = data.findIndex(mappedUser => mappedUser.uid === user?.uid);
-  const currentUser = data[indexOfCurrentUser]
-  console.log(data)
+  if (isLoading) return <Loading />;
+  if (isError) return <ErrorComponent message={"An error occured."} />;
+  const top5 = data.slice(0, 5);
+  const containedInTop5 = top5.map((item) => item.uid).includes(user!.uid);
+  const indexOfCurrentUser = data.findIndex(
+    (mappedUser) => mappedUser.uid === user?.uid
+  );
+  const currentUser = data[indexOfCurrentUser];
+  console.log(data);
 
   return (
     <div
@@ -169,7 +168,7 @@ const LeaderboardPage = () => {
                 className="w-full h-ful object-cover"
               />
             </div>
-            <p>{mappedUser.name}</p>
+            <p>{user?.uid === mappedUser.uid ? "You" : mappedUser.name}</p>
           </div>
           <p>{mappedUser.experience}</p>
           <div className="flex flex-col items-center">
@@ -211,61 +210,51 @@ const LeaderboardPage = () => {
       ))}
       {containedInTop5 || (
         <div
-        className={`grid grid-cols-4 rounded-full w-full font-bold text-md px-10 py-6 place-items-center ${
-          "text-yellow1 border-[3px] border-yellow1"
-        }`}
-        style={{
-          background:"linear-gradient(175.83deg, #8679FF 3.4%, #0A1E86 103.73%)"
-        }}
-      >
-        <p>{indexOfCurrentUser + 1}</p>
-        <div className="flex gap-4 items-center place-self-start">
-          <div className="rounded-full w-12 h-12 overflow-hidden">
-            <img
-              src={currentUser.photo_url}
-              className="w-full h-ful object-cover"
-            />
+          className={`grid grid-cols-4 rounded-full w-full font-bold text-md px-10 py-6 place-items-center ${"text-yellow1 border-[3px] border-yellow1"}`}
+          style={{
+            background:
+              "linear-gradient(175.83deg, #8679FF 3.4%, #0A1E86 103.73%)",
+          }}
+        >
+          <p>{indexOfCurrentUser + 1}</p>
+          <div className="flex gap-4 items-center place-self-start">
+            <div className="rounded-full w-12 h-12 overflow-hidden">
+              <img
+                src={currentUser.photo_url}
+                className="w-full h-ful object-cover"
+              />
+            </div>
+            <p>{currentUser.name}</p>
           </div>
-          <p>{currentUser.name}</p>
+          <p>{currentUser.experience}</p>
+          <div className="flex flex-col items-center">
+            {currentUser.experience > 200 ? (
+              <>
+                <GradCap className="w-6 h-6" fill="#FFCF87" />
+                <p>Senior</p>
+              </>
+            ) : currentUser.experience > 100 ? (
+              <>
+                <Medal className="w-6 h-6" fill="#FFCF87" />
+                <p>Junior</p>
+              </>
+            ) : currentUser.experience > 50 ? (
+              <>
+                <University className="w-6 h-6" fill="#FFCF87" />
+                <p>Sophomore</p>
+              </>
+            ) : (
+              <>
+                <Book className="w-6 h-6" fill="#FFCF87" />
+                <p>Freshman</p>
+              </>
+            )}
+          </div>
         </div>
-        <p>{currentUser.experience}</p>
-        <div className="flex flex-col items-center">
-          {currentUser.experience > 200 ? (
-            <>
-              <GradCap
-                className="w-6 h-6"
-                fill="#FFCF87"
-              />
-              <p>Senior</p>
-            </>
-          ) : currentUser.experience > 100 ? (
-            <>
-              <Medal
-                className="w-6 h-6"
-                fill="#FFCF87"
-              />
-              <p>Junior</p>
-            </>
-          ) : currentUser.experience > 50 ? (
-            <>
-              <University
-                className="w-6 h-6"
-                fill="#FFCF87"
-              />
-              <p>Sophomore</p>
-            </>
-          ) : (
-            <>
-              <Book
-                className="w-6 h-6"
-                fill="#FFCF87"
-              />
-              <p>Freshman</p>
-            </>
-          )}
-        </div>
-      </div>
       )}
+      <Link href="/">
+        <Button className="bg-yellow1 text-base font-bold">Back to Home</Button>
+      </Link>
     </div>
   );
 };

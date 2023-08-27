@@ -20,7 +20,6 @@ import bg from "@/public/bg1.png";
 import Loading from "@/components/Loading";
 import ErrorComponent from "@/components/Error";
 
-
 const QuizPage = () => {
   const router = useRouter();
   const { user } = useAppContext();
@@ -53,8 +52,10 @@ const QuizPage = () => {
       const activeSessions = result.docs;
 
       const activeSession = activeSessions[0].data() as StudySession;
-      if (Date.now() < activeSession.study_end_time.toMillis())
+      if (Date.now() < activeSession.study_end_time.toMillis()) {
         router.push("/study");
+        return;
+      }
 
       const content = await parsePdf(
         activeSession.pdf_url,
@@ -81,15 +82,14 @@ const QuizPage = () => {
         activeSession.quiz = data;
         activeSession.quiz_end_time = Timestamp.fromMillis(quizEndTime);
         activeSession.duration = timeToAccomplishTask;
-  
       }
       return { activeSession, activeSessionID, length: content.length };
     },
     staleTime: Infinity,
   });
 
-  if (isLoading) return <Loading/>;
-  if (isError) return <ErrorComponent message={"An error has occured."}/>;
+  if (isLoading) return <Loading />;
+  if (isError) return <ErrorComponent message={"An error has occured."} />;
 
   return (
     <div
@@ -104,7 +104,6 @@ const QuizPage = () => {
         quizId={data?.activeSessionID!}
         contentLength={data?.length!}
       />
-
     </div>
   );
 };
