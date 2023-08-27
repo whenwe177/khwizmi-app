@@ -21,15 +21,13 @@ import University from "@/components/Svg/University";
 import Book from "@/components/Svg/Book";
 import Loading from "@/components/Loading";
 import ErrorComponent from "@/components/Error";
-import AccordionListOfQuizzes from "@/components/AccordionListOfQuizzes";
 
 const LeaderboardPage = () => {
   const { user } = useAppContext();
   const userRef = collection(firestore, "user_attributes");
   const q = query(
     userRef,
-    orderBy("experience", "desc"),
-    limit(5)
+    orderBy("experience", "desc")
   );
   const { data, isLoading, isError, isSuccess } = useQuery(["leaderboard"], {
     queryFn: async () => {
@@ -43,11 +41,12 @@ const LeaderboardPage = () => {
   
 
   if (isLoading) return <Loading/>;
-  if (isError) return <ErrorComponent/>;
+  if (isError) return <ErrorComponent message={"An error occured."}/>;
   const top5 = data.slice(0,5);
   const containedInTop5 = top5.map(item => item.uid).includes(user!.uid)
   const indexOfCurrentUser = data.findIndex(mappedUser => mappedUser.uid === user?.uid);
   const currentUser = data[indexOfCurrentUser]
+  console.log(data)
 
   return (
     <div
@@ -69,8 +68,8 @@ const LeaderboardPage = () => {
             <div className="w-1/5 flex flex-col items-center gap-2">
               <div className="rounded-full w-20 h-20 overflow-hidden">
                 <img
-                  alt={data![1].name}
-                  src={data![1].photo_url}
+                  alt={data?.[1]?.name}
+                  src={data?.[1]?.photo_url}
                   className="w-full h-full"
                 />
               </div>
@@ -166,7 +165,7 @@ const LeaderboardPage = () => {
           <div className="flex gap-4 items-center place-self-start">
             <div className="rounded-full w-12 h-12 overflow-hidden">
               <img
-                src={mappedUser.photo_url}
+                src={mappedUser?.photo_url}
                 className="w-full h-ful object-cover"
               />
             </div>

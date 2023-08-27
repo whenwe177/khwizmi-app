@@ -82,6 +82,7 @@ const Countdown: React.FC<CountdownProps> = ({
   }, []);
 
   useEffect(() => {
+    console.log(quizId);
     if (delta > 0) return;
     const studySessionRef = doc(firestore, "study_session", quizId);
 

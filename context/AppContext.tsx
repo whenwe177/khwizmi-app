@@ -10,9 +10,12 @@ import { User, onAuthStateChanged } from "firebase/auth";
 import { collection, getDocs, limit, query, where } from "firebase/firestore";
 import { useRouter } from "next/router";
 import Loading from "@/components/Loading";
+import { Montserrat } from "next/font/google";
 interface AppContextState {
   user: User | null;
 }
+
+const montserrat = Montserrat({subsets: ["latin"]})
 
 const AppContext = createContext<AppContextState>({} as AppContextState);
 
@@ -51,10 +54,14 @@ const AppProvider: React.FC<PropsWithChildren> = ({ children }) => {
   }, []);
 
   if (loading) {
-    return <Loading/>
+    return <Loading />;
   }
 
-  return <AppContext.Provider value={{ user }}>{children}</AppContext.Provider>;
+  return (
+    <AppContext.Provider value={{ user }}>
+      <div className={montserrat.className}>{children}</div>
+    </AppContext.Provider>
+  );
 };
 
 const useAppContext = () => useContext(AppContext);
