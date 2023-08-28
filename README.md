@@ -1,6 +1,6 @@
 # Khwizmi
 ### Made with 💖 by Rashad, Alex, and Indi
-#### UQCS Hackathon Winner for Best Presentation
+#### Top 5 project for UQCS Hackathon 2023 and Best Presentation Winner
 
 ![Image of homepage](/public/homepage.png)
 
