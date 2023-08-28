@@ -1,5 +1,6 @@
 # Khwizmi
-### Made with 🤍 by Rashad, Alex, and Indi
+### Made with 💖 by Rashad, Alex, and Indi
+#### UQCS Hackathon Winner for Best Presentation
 
 ![Image of homepage](/public/homepage.png)
 
